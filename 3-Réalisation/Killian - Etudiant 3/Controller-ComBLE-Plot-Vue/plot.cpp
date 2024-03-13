@@ -1,5 +1,6 @@
 #include "plot.h"
 
+/*Constructeur*/
 
 Plot::Plot()
 {
@@ -12,6 +13,8 @@ Plot::Plot()
 
     this->listePlot.append(this);
 }
+
+/*Méthode*/
 
 void Plot::lireBatterie(Plot *)
 {
@@ -40,6 +43,13 @@ int Plot::getNvBatterie()
     return nvBatterie;
 }
 
+QString Plot::getNom()
+{
+    return m_nom;
+}
+
+//Slot
+
 void Plot::standBy()
 {
 
@@ -50,6 +60,19 @@ void Plot::standBy()
 
     //Bloquer 1 seconde......
 
+}
+
+QString Plot::nom() const
+{
+    return m_nom;
+}
+
+void Plot::setNom(const QString &nom)
+{
+    if (m_nom != nom) {
+        m_nom = nom;
+        emit nomChanged();
+    }
 }
 
 

@@ -15,26 +15,26 @@ ApplicationWindow {
     Button {
         id: detectButton
         text: "Détecter les plots"
+        width: 275
+        height :100
         anchors {
             bottom: parent.bottom  // Ancre le bas du bouton au bas de la fenêtre
             horizontalCenter: parent.horizontalCenter  // Centre horizontalement le bouton dans la fenêtre
         }
 
-        onClicked: {
-            // Afficher un message dans la console lorsque le bouton est cliqué
-            console.log("Bouton cliqué");
-            comBLE.startScanning();
+        background: Rectangle {
+            anchors.fill: parent
+            color: "#FFB22A"
+            border.color:  "black"
+            border.width: 1
         }
 
-        // Handle the device discovered signal
-        /*onDeviceDiscovered: {
-            // Create a rectangle to display the device name
-            var deviceRect = Qt.createQmlObject('import QtQuick 2.15; Rectangle { width: 200; height: 50; color: "lightgreen"; border.color: "green"; radius: 5; Text { anchors.centerIn: parent; text: info.name; } }', detectButton);
 
-            // Position the rectangle relative to the ApplicationWindow
-            deviceRect.x = (ApplicationWindow.width - deviceRect.width) / 2;
-            deviceRect.y = ApplicationWindow.height - deviceRect.height - 100; // Adjust position as needed
-        }*/
+        onClicked: {
+            console.log("startScanning");
+            controller.startScanning()
+
+        }
     }
 
     ListView {
@@ -43,19 +43,27 @@ ApplicationWindow {
         anchors.bottomMargin: 46
         model: controller.listePlots
         delegate: Item {
-            x: 5
-            width: 80
-            height: 40
-            Row {
-                id: row1
-
+            width: listView.width // Définir la largeur de l'élément sur la largeur de la liste
+            height: 60 // Hauteur de l'élément
+            Rectangle {
+                width: parent.width
+                height: parent.height
+                color: "#BBFAFC" // Couleur orange
+                border.color: "black" // Couleur de la bordure
                 Text {
-                    text: nvBatterie
-                    anchors.verticalCenter: parent.verticalCenter
+                    text: m_nom // Afficher le nom du périphérique
+                    anchors.centerIn: parent
                     font.bold: true
                 }
-                spacing: 10
+                Text {
+                    text: nvBatterie // Afficher le nom du périphérique
+                    anchors.centerIn: parent
+                    font.bold: true
+                }
             }
         }
     }
+
+
+
 }

@@ -18,12 +18,14 @@ public:
 signals:
     void deviceDiscovered(const QBluetoothDeviceInfo &deviceInfo);
     void scanningChanged();
+    void deviceScanFinished();
 
 public slots:
     void startScanning();
     void stopScanning();
     void deviceDetecte(const QBluetoothDeviceInfo &info);
 
+    void terminerScanDevice();
 private:
     QBluetoothDeviceDiscoveryAgent *m_deviceDiscoveryAgent;
     bool m_scanning;

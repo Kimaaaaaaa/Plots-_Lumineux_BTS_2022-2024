@@ -12,14 +12,13 @@ int main(int argc, char *argv[])
 #endif
 
     QGuiApplication app(argc, argv);
-    ComBLE comBLE;
+
 
 
     Controller controller;
 
 
     QQmlApplicationEngine engine;
-   // engine.rootContext()->setContextProperty("comBLE", &comBLE);
     engine.rootContext()->setContextProperty("controller", &controller);
     qmlRegisterType<Plot>("entitePlot", 1, 0, "Plot");
 

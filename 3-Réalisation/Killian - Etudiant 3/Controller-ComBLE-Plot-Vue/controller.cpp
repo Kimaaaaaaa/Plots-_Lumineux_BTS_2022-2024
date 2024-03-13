@@ -1,26 +1,56 @@
 #include "controller.h"
 #include "plot.h"
+#include <QDebug>
 
 Controller::Controller()
 {
+    m_com = new ComBLE();
 
-    listePlots.append(new Plot());
+    // Connexion du signal deviceDiscovered à la méthode addPlot du Controller
+    connect(m_com, &ComBLE::deviceDiscovered, this, &Controller::addPlot);
 
-    listePlots.append(new Plot());
+    connect(m_com, &ComBLE::deviceScanFinished, this, &Controller::afficherPlots);
 
-    listePlots.append(new Plot());
-
-    listePlots.append(new Plot());
-
-    listePlots.append(new Plot());
-
-    emit listePlotsChanged();
 
 }
 
 QQmlListProperty<Plot> Controller::getListePlots()
 {
-    return QQmlListProperty<Plot>(this, listePlots);;
+    return QQmlListProperty<Plot>(this, listePlots);
 }
 
-//méthode détecter plot
+ComBLE *Controller::com() const { return m_com; }
+
+QString Controller::getNomDernierPlotTrouve()
+{
+    return this->listePlots.takeLast()->getNom();
+}
+
+
+
+/*Slot*/
+
+void Controller::startScanning() {
+    if (m_com) {
+        m_com->startScanning();
+    }
+}
+
+void Controller::afficherPlots(){
+    // Emettre le signal indiquant que la liste de plots a changé
+    emit listePlotsChanged();
+}
+
+void Controller::addPlot(const QBluetoothDeviceInfo &deviceInfo)
+{
+    if(deviceInfo.name().contains("Plot")) {
+        // Créer un nouveau plot avec le nom du périphérique
+        Plot *newPlot = new Plot();
+        newPlot->setNom(deviceInfo.name());
+
+        // Ajoutez le nouveau plot à la liste
+        listePlots.append(newPlot);
+
+
+    }
+}
