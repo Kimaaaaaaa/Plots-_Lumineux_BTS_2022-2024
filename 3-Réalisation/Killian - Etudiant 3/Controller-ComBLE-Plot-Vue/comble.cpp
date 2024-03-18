@@ -5,7 +5,7 @@ ComBLE::ComBLE(QObject *parent) : QObject(parent)
 {
     m_deviceDiscoveryAgent = new QBluetoothDeviceDiscoveryAgent(this);
 
-    m_deviceDiscoveryAgent->setLowEnergyDiscoveryTimeout(5000);
+    m_deviceDiscoveryAgent->setLowEnergyDiscoveryTimeout(2000);
 
     connect(m_deviceDiscoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
             this, &ComBLE::deviceDetecte);
@@ -24,6 +24,8 @@ void ComBLE::terminerScanDevice(){
 
 void ComBLE::startScanning()
 {
+
+
     qDebug() << "Scanning for devices...";
     m_deviceDiscoveryAgent->start();
 }

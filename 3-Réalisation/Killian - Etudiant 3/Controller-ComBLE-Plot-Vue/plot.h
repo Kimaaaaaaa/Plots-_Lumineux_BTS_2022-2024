@@ -8,6 +8,8 @@ class Plot : public QObject
    Q_OBJECT
 
     Q_PROPERTY(int nvBatterie READ getNvBatterie NOTIFY nvBatterieChanged)
+    Q_PROPERTY(QString nom READ getNom NOTIFY nomChanged )
+
 
 
 public:
@@ -20,6 +22,8 @@ public:
 
     QString nom() const;
     void setNom(const QString &nom);
+
+    int getId() const;
 
 
 signals:
@@ -34,9 +38,10 @@ public slots:
 private:
     QString couleur;
     short int nvBatterie;
-    short int id;
     QVector<Plot*> listePlot;
     QString m_nom;
+    static int s_nextId; // Variable statique pour le prochain identifiant
+    int m_id;
 
 };
 

@@ -19,6 +19,7 @@ signals:
     void deviceDiscovered(const QBluetoothDeviceInfo &deviceInfo);
     void scanningChanged();
     void deviceScanFinished();
+    void deviceScannerCleared();
 
 public slots:
     void startScanning();

@@ -11,18 +11,24 @@ class Controller: public QObject
 {
     Q_OBJECT
 
+
     Q_PROPERTY(QQmlListProperty<Plot> listePlots READ getListePlots NOTIFY listePlotsChanged)
     Q_PROPERTY(QString nomDernierPlotTrouve READ getNomDernierPlotTrouve NOTIFY nomDernierPlotTrouveChanged)
                //Ce que l'on veux                //comment on l'a               //signal
 
 
+
 public:
     Controller();
-
+    Q_INVOKABLE void couplerPlot(int index);
+    Q_INVOKABLE int getIdPlot();
     QQmlListProperty<Plot> getListePlots();
     ComBLE* com() const;
     void setCom(ComBLE* com) { m_com = com; emit comChanged(); }
     QString getNomDernierPlotTrouve();
+
+
+
 
 
 
@@ -35,6 +41,9 @@ signals:
     void listePlotsChanged();
     void comChanged();
     void nomDernierPlotTrouveChanged();
+
+    void statutScanEnCours();
+    void statutScanTermine();
 
 private:
     QList<Plot*> listePlots;

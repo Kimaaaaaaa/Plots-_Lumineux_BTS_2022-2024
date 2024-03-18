@@ -9,14 +9,35 @@ ApplicationWindow {
     height: 900
     title: "Detection de Plots"
 
+    Rectangle{
+          anchors.fill: parent
+          color: "#BBFAFC"
+    }
 
+    Connections{
+        target: controller
+        function onStatutScanEnCours(){
+            detectButton.enabled = false
+            detectButton.text = "Scan en cours ...."
+        }
+    }
+    Connections{
+        target: controller
+        function onStatutScanTermine(){
+           detectButton.enabled = true
+            detectButton.text = "Détecter les plots"
+        }
+    }
 
     // Définir un modèle de bouton pour détecter les plots
     Button {
         id: detectButton
+        y: 856
         text: "Détecter les plots"
-        width: 275
-        height :100
+        anchors.bottomMargin: 11
+
+        width: 159
+        height :33
         anchors {
             bottom: parent.bottom  // Ancre le bas du bouton au bas de la fenêtre
             horizontalCenter: parent.horizontalCenter  // Centre horizontalement le bouton dans la fenêtre
@@ -38,28 +59,53 @@ ApplicationWindow {
     }
 
     ListView {
-        id: listView
-        anchors.fill: parent
-        anchors.bottomMargin: 46
+        id: listPlot
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.bottom: detectButton.top
         model: controller.listePlots
         delegate: Item {
-            width: listView.width // Définir la largeur de l'élément sur la largeur de la liste
+            width: parent.width // Définir la largeur de l'élément sur la largeur de la liste
             height: 60 // Hauteur de l'élément
             Rectangle {
                 width: parent.width
                 height: parent.height
-                color: "#BBFAFC" // Couleur orange
+                color: "#FFB22A" // Couleur orange
                 border.color: "black" // Couleur de la bordure
                 Text {
-                    text: m_nom // Afficher le nom du périphérique
+                    text: "Nom : " + nom // Afficher le nom du périphérique
                     anchors.centerIn: parent
                     font.bold: true
+                    topPadding: 30
+
+
                 }
                 Text {
-                    text: nvBatterie // Afficher le nom du périphérique
+                    text: "Niveau de batterie : " + nvBatterie + "%" // Afficher le nom du périphérique
                     anchors.centerIn: parent
                     font.bold: true
                 }
+                Text{
+                     text: "ID du plot : " + controller.getIdPlot()
+
+
+                }
+
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        var idPlot = controller.getIdPlot()
+
+                        console.log("Vous avez ajouté le plot : " + idPlot)
+
+                        // Appeler la fonction pour effectuer le couplage du plot
+                        controller.couplerPlot(idPlot)
+                    }
+                }
+
+
             }
         }
     }

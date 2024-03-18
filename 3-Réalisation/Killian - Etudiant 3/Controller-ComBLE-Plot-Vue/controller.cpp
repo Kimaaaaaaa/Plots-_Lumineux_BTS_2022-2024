@@ -12,6 +12,8 @@ Controller::Controller()
     connect(m_com, &ComBLE::deviceScanFinished, this, &Controller::afficherPlots);
 
 
+
+
 }
 
 QQmlListProperty<Plot> Controller::getListePlots()
@@ -26,12 +28,38 @@ QString Controller::getNomDernierPlotTrouve()
     return this->listePlots.takeLast()->getNom();
 }
 
+int Controller::getIdPlot()
+{
+    // Vérifiez d'abord si la liste des plots n'est pas vide
+    if (!listePlots.isEmpty()) {
+        // Récupérez le dernier plot ajouté dans la liste
+        Plot *lastPlot = listePlots.last();
+
+        // Vérifiez si le dernier plot est valide (non nul)
+        if (lastPlot) {
+            // Obtenez l'ID du dernier plot
+            return lastPlot->getId();
+        }
+    }
+
+    // Retournez une valeur par défaut si la liste des plots est vide ou si le dernier plot est nul
+    return -1;
+}
+
 
 
 /*Slot*/
 
 void Controller::startScanning() {
-    if (m_com) {
+
+    // Effacer la liste des plots détectés
+    listePlots.clear();
+
+    // Émettre le signal indiquant que la liste de plots a changé
+    emit listePlotsChanged();
+
+    if(m_com){
+        emit statutScanEnCours();
         m_com->startScanning();
     }
 }
@@ -39,11 +67,13 @@ void Controller::startScanning() {
 void Controller::afficherPlots(){
     // Emettre le signal indiquant que la liste de plots a changé
     emit listePlotsChanged();
+
+    emit statutScanTermine();
 }
 
 void Controller::addPlot(const QBluetoothDeviceInfo &deviceInfo)
 {
-    if(deviceInfo.name().contains("Plot")) {
+    //if(deviceInfo.name().contains("Plot")) {
         // Créer un nouveau plot avec le nom du périphérique
         Plot *newPlot = new Plot();
         newPlot->setNom(deviceInfo.name());
@@ -52,5 +82,20 @@ void Controller::addPlot(const QBluetoothDeviceInfo &deviceInfo)
         listePlots.append(newPlot);
 
 
+    //}
+}
+
+
+void Controller::couplerPlot(int index)
+{
+    // Vérifier si l'index est valide
+    if (index >= 0 && index < listePlots.count()) {
+        // Récupérer le plot correspondant à l'index
+        qDebug() << "l'id du plot est" << index;
+        Plot *plot = listePlots.at(index);
+
+        // Effectuer le couplage du plot
+        // Exemple : appeler une méthode pour activer le plot
+        plot->activerPlot(plot,"1");
     }
 }

@@ -2,11 +2,15 @@
 
 /*Constructeur*/
 
+int Plot::s_nextId = 1;
+
 Plot::Plot()
 {
     connect(this, &Plot::tempsRecu,
             this, &Plot::standBy);
 
+
+    m_id = s_nextId++;
     this->couleur = nullptr;
     lireBatterie(this);
     nvBatterie = 10;
@@ -74,5 +78,11 @@ void Plot::setNom(const QString &nom)
         emit nomChanged();
     }
 }
+
+int Plot::getId() const {
+    return m_id;
+}
+
+
 
 
