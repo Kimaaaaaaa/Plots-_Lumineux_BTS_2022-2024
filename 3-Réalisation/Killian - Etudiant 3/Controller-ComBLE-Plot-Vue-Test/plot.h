@@ -7,7 +7,7 @@
 #include <QLowEnergyCharacteristic>
 #include <QDebug>
 #include <QBluetoothUuid>
-#include <ComBLE.h>
+
 
 class Plot : public QObject
 {
@@ -44,6 +44,8 @@ signals:
 
 public slots:
     void standBy();
+     void affecterBatterie(const QByteArray &batteryValue);
+
 
 private:
     QString couleur;

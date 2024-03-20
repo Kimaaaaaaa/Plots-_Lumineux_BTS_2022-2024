@@ -14,6 +14,12 @@ Controller::Controller()
 
 
 
+
+
+
+
+
+
 }
 
 QQmlListProperty<Plot> Controller::getListePlots()
@@ -50,9 +56,6 @@ int Controller::getIdPlot()
 
 /*Slot*/
 
-
-/*Slot*/
-
 void Controller::startScanning() {
 
     // Effacer la liste des plots détectés
@@ -68,37 +71,30 @@ void Controller::startScanning() {
     }
 }
 
-/*void Controller::startScanning() {
-    // Effacer la liste des plots détectés
-    listePlots.clear();
-    // Émettre le signal indiquant que la liste de plots a changé
-    emit listePlotsChanged();
-
-    if (m_com) {
-        // Récupérer un objet Plot de la liste des plots
-        if (!listePlots.isEmpty()) {
-            Plot *plot = listePlots.first(); // Récupérer le premier plot de la liste
-            m_com->setPlot(plot); // Passer l'objet Plot à ComBLE
-        } else {
-            qDebug() << "Aucun plot disponible pour la connexion.";
-            return;
-        }
-
-        emit statutScanEnCours();
-        m_com->startScanning();
-    }
-}
-*/
-
 
 void Controller::afficherPlots(){
     // Emettre le signal indiquant que la liste de plots a changé
-    qDebug() << "afficher plot";
     emit listePlotsChanged();
 
     emit statutScanTermine();
 }
 
+/*TEST*/
+
+/*
+void Controller::addPlot(const QBluetoothDeviceInfo &deviceInfo)
+{
+    //if(deviceInfo.name().contains("Plot")) {
+        // Créer un nouveau plot avec le nom du périphérique
+        Plot *newPlot = new Plot();
+        newPlot->setNom(deviceInfo.name());
+
+        // Ajoutez le nouveau plot à la liste
+        listePlots.append(newPlot);
+
+
+    //}
+}*/
 void Controller::addPlot(const QBluetoothDeviceInfo &deviceInfo)
 {
     // Vérifier si le périphérique existe déjà dans la liste des plots
@@ -116,10 +112,11 @@ void Controller::addPlot(const QBluetoothDeviceInfo &deviceInfo)
         Plot *newPlot = new Plot();
         newPlot->setNom(deviceInfo.name());
         newPlot->setId(listePlots.size() + 1); // Utiliser la taille actuelle de la liste comme ID du plot
+         connect(this, &Controller::batteryValueChanged, newPlot, &Plot::affecterBatterie);
         qDebug() << "L'id du plot est : " << newPlot->getId();
 
         //créer le controller BLE pour le device (plot)
-        QLowEnergyController *controllerBle = new QLowEnergyController(deviceInfo, this);
+        QLowEnergyController *controllerBle =  QLowEnergyController::createCentral(deviceInfo, this);
 
 
 
@@ -131,6 +128,8 @@ void Controller::addPlot(const QBluetoothDeviceInfo &deviceInfo)
         controllerBle->connectToDevice();
 
         m_com->scanServices(controllerBle);
+
+        connect(this, &Controller::batteryValueChanged, newPlot, &Plot::affecterBatterie);
 
 
 
@@ -154,3 +153,5 @@ void Controller::couplerPlot(int index)
         plot->activerPlot(plot,"1");
     }
 }
+
+

@@ -4,12 +4,9 @@
 #include <QObject>
 #include <QBluetoothDeviceDiscoveryAgent>
 #include <QList>
-#include <QBluetoothUuid>
-#include <QLowEnergyController>
-#include <QLowEnergyService>
 #include <QLowEnergyCharacteristic>
-#include <QBluetoothDeviceInfo>
-#include <plot.h>
+#include <QLowEnergyService>
+#include <QLowEnergyController>
 
 #define SERVICE_UUID_BATTERIE "0000180F-0000-1000-8000-00805F9B34FB"
 #define CHARACTERISTIC_UUID_BATTERIE  "0000180F-0000-1000-8000-00805F9B34FB"
@@ -21,10 +18,9 @@ class ComBLE : public QObject
 
 public:
     explicit ComBLE(QObject *parent = nullptr);
+    void scanServices(QLowEnergyController *controller);
 
     bool isScanning() const;
-    QList<QByteArray> recupererValeurCharacteristic(QLowEnergyService *service);
-    void detecterServices(QLowEnergyController* controllerBle);
 
 signals:
     void deviceDiscovered(const QBluetoothDeviceInfo &deviceInfo);
@@ -34,16 +30,19 @@ signals:
     void characteristicValueChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value);
     void characteristicValuesReady(const QList<QByteArray> &values);
     void serviceDetecte(QLowEnergyService* service);
+    void batterieLue(const QByteArray &newValue);
 
 public slots:
     void startScanning();
     void stopScanning();
     void deviceDetecte(const QBluetoothDeviceInfo &info);
     void terminerScanDevice();
-    void scanServices(QLowEnergyController *controller);
-    void serviceStateChanged(QLowEnergyService::ServiceState newState);
-    void lireValeurCharacteristicBattery(QLowEnergyService* service);
 
+    void serviceStateChanged(QLowEnergyService::ServiceState newState);
+    //void lireValeurCharacteristicBattery(QLowEnergyService* service);
+
+
+    QList<QByteArray> recupererValeurCharacteristic(QLowEnergyService *service);
 private:
     QBluetoothDeviceDiscoveryAgent *m_deviceDiscoveryAgent;
     QList<QLowEnergyService*> listeDeService;

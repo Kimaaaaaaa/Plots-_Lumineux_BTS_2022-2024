@@ -1,7 +1,5 @@
 #include "comble.h"
-#include "plot.h"
 #include <QDebug>
-
 
 ComBLE::ComBLE(QObject *parent) : QObject(parent)
 {
@@ -12,9 +10,6 @@ ComBLE::ComBLE(QObject *parent) : QObject(parent)
     connect(m_deviceDiscoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
             this, &ComBLE::deviceDetecte);
     connect(m_deviceDiscoveryAgent, &QBluetoothDeviceDiscoveryAgent::finished, this, &ComBLE::terminerScanDevice);
-
-    connect(this,  &ComBLE::serviceDetecte, this, &ComBLE::lireValeurCharacteristicBattery);
-
 
 
 
@@ -45,7 +40,7 @@ void ComBLE::stopScanning()
 
 void ComBLE::deviceDetecte(const QBluetoothDeviceInfo &info)
 {
-    if(/*info.name().contains("Plot") ||*/ info.name().contains("PLOT"))
+    if(info.name().contains("Plot") || info.name().contains("PLOT"))
     {
         qDebug() << "Device trouvé !";
         qDebug() << "Nom du périphérique:" << info.name();
@@ -54,7 +49,7 @@ void ComBLE::deviceDetecte(const QBluetoothDeviceInfo &info)
     }
 }
 
-void ComBLE::scanServices(QLowEnergyController *controllerBle){
+/*void ComBLE::scanServices(QLowEnergyController *controllerBle){
 
     //scan des services
     connect(controllerBle, &QLowEnergyController::serviceDiscovered, [=](const QBluetoothUuid &uuid)
@@ -64,6 +59,42 @@ void ComBLE::scanServices(QLowEnergyController *controllerBle){
 
         //Si un service a été déouvert
         if (service) {
+            // Connecter le signal de service découvert à une fonction slot
+            qDebug() << "test";
+            connect(service, &QLowEnergyService::stateChanged, this, &ComBLE::serviceStateChanged);
+            // Démarrer la découverte du service
+            service->discoverDetails();
+            listeDeService.push_back(service);
+
+            //detecter les caracteristiques
+            //characteristic  -> QlowEnergyCharacteristic
+            const QLowEnergyCharacteristic characteristic = service->characteristic(uuid);
+
+
+            connect(this, &ComBLE::serviceDetecte, this, [=](QLowEnergyService *service) {
+                lireValeurCharacteristicBattery(service);
+            });
+
+        }
+    });
+
+}*/
+
+void ComBLE::scanServices(QLowEnergyController *controllerBle){
+
+
+
+    //scan des services
+    connect(controllerBle, &QLowEnergyController::serviceDiscovered, [=](const QBluetoothUuid &uuid)
+    {
+        // Récupérer le service
+        QLowEnergyService *service = controllerBle->createServiceObject(uuid);
+        // qDebug() << "test";
+
+
+        //Si un service a été déouvert
+        if (service) {
+
             // Connecter le signal de service découvert à une fonction slot
             connect(service, &QLowEnergyService::stateChanged, this, &ComBLE::serviceStateChanged);
             // Démarrer la découverte du service
@@ -81,48 +112,34 @@ void ComBLE::scanServices(QLowEnergyController *controllerBle){
     });
 
 
+    connect(controllerBle, &QLowEnergyController::discoveryFinished, [=]()
+    {
+        QList<QBluetoothUuid> listeUUIDService = controllerBle->services();
 
-
-}
-
-void ComBLE::lireValeurCharacteristicBattery(QLowEnergyService* service)
-{
-    const QLowEnergyCharacteristic characteristic = service->characteristic(QBluetoothUuid(QStringLiteral(CHARACTERISTIC_UUID_BATTERIE)));
-    qDebug() << characteristic.value();
-
-}
-
-
-
-
-/*void ComBLE::scanServices(QLowEnergyController *controller)
-{
-    // Scanner les services du périphérique
-    connect(controller, &QLowEnergyController::serviceDiscovered, [=](const QBluetoothUuid &uuid) {
-        // Récupérer le service
-        QLowEnergyService *service = controller->createServiceObject(uuid);
-        if (service) {
-            // Connecter le signal de service découvert à une fonction slot
-            connect(service, &QLowEnergyService::stateChanged, this, &ComBLE::serviceStateChanged);
-            // Démarrer la découverte du service
+        foreach (QBluetoothUuid uuidService, listeUUIDService) {
+            QLowEnergyService* service = controllerBle->createServiceObject(uuidService, controllerBle);
             service->discoverDetails();
-            listeDeService.push_back(service);
 
-            // Connecter le signal characteristicChanged au slot de Plot
+            connect(service, &QLowEnergyService::stateChanged, this, &ComBLE::serviceStateChanged);
 
+            // Lire la valeur des characteristiques découvert
+            const QLowEnergyCharacteristic characteristic = service->characteristic(uuidService);
+            if (characteristic.isValid()) {
+                qDebug() << "Valeur actuelle de la caractéristique : " << characteristic.value();
+
+                emit batterieLue(characteristic.value());
+            }
         }
     });
 
-    connect(controller, &QLowEnergyController::discoveryFinished,[=](){
-        for(QLowEnergyService* service : listeDeService)
-        {
-            recupererValeurCharacteristic(service);
-        }
-    });
 
-    // Démarrer la découverte des services
-    controller->discoverServices();
-}*/
+    controllerBle->discoverServices();
+
+}
+
+
+
+
 
 
 
@@ -146,6 +163,18 @@ void ComBLE::serviceStateChanged(QLowEnergyService::ServiceState newState)
     }
 }
 
+/*void ComBLE::lireValeurCharacteristicBattery(QLowEnergyService *service)
+{
+
+    const QLowEnergyCharacteristic characteristic = service->characteristic(QBluetoothUuid(QStringLiteral(CHARACTERISTIC_UUID_BATTERIE)));
+
+
+
+    qDebug() << characteristic.value();
+}
+*/
+
+
 //Coder un slot qui récupère les services puis extraits les valeurs dans une QList<QByteArray>
 QList<QByteArray> ComBLE::recupererValeurCharacteristic(QLowEnergyService* service)
 {
@@ -165,11 +194,3 @@ QList<QByteArray> ComBLE::recupererValeurCharacteristic(QLowEnergyService* servi
 
     return listeValeur;
 }
-
-
-
-
-
-
-
-

@@ -87,7 +87,7 @@ ApplicationWindow {
                     font.bold: true
                 }
                 Text{
-                     text: "ID du plot : " + (index + 1)
+                     text: "ID du plot : " + controller.getIdPlot()
 
 
                 }
@@ -98,7 +98,7 @@ ApplicationWindow {
                     onClicked: {
                         var idPlot = controller.getIdPlot()
 
-                        console.log("Vous avez ajouté le plot : " + (index + 1))
+                        console.log("Vous avez ajouté le plot : " + idPlot)
 
                         // Appeler la fonction pour effectuer le couplage du plot
                         controller.couplerPlot(idPlot)

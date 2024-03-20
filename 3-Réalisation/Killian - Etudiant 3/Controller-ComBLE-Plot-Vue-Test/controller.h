@@ -1,3 +1,4 @@
+
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
@@ -35,6 +36,7 @@ public slots:
     void startScanning();
     void addPlot(const QBluetoothDeviceInfo &deviceInfo);
 
+
     void afficherPlots();
 signals:
     void listePlotsChanged();
@@ -43,6 +45,7 @@ signals:
 
     void statutScanEnCours();
     void statutScanTermine();
+    void batteryValueChanged(const QByteArray &batteryValue);
 
 private:
     QList<Plot*> listePlots;

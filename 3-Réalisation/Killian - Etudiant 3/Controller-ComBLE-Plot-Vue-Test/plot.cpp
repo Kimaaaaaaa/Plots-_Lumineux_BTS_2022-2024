@@ -102,6 +102,23 @@ void Plot::standBy()
     //Bloquer 1 seconde......
 }
 
+void Plot::affecterBatterie(const QByteArray &batteryValue)
+{
+    // Afficher la valeur de la batterie
+    qDebug() << "Valeur de la batterie : " << batteryValue;
+
+    // Convertir la valeur de la batterie en entier
+    int batteryLevel = batteryValue.toInt();
+    this->nvBatterie = batteryLevel;
+
+    // Effectuer d'autres opérations en fonction de la valeur de la batterie
+    if (batteryLevel >= 50) {
+        qDebug() << "La batterie est suffisamment chargée.";
+    } else {
+        qDebug() << "La batterie est faible, veuillez la recharger.";
+    }
+}
+
 QLowEnergyController *Plot::getControllerBle() const
 {
     return controllerBle;
