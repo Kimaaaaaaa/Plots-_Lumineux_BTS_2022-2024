@@ -1,3 +1,6 @@
+/*Plot.cpp*/
+
+
 #include "plot.h"
 
 /*Constructeur*/
@@ -16,20 +19,16 @@ Plot::Plot()
 
 
 
+
+
     this->couleur = nullptr;
-    lireBatterie();
     nvBatterie = 10;
+    selected = false;
 
 }
 
 /*Méthode*/
 
-void Plot::lireBatterie()
-{
-    //this->nvBatterie = 70;
-
-    //this->m_com->
-}
 
 
 
@@ -63,6 +62,17 @@ int Plot::getNvBatterie()
 QString Plot::getNom()
 {
     return m_nom;
+}
+
+bool Plot::getSelected()
+{
+    return selected;
+}
+
+void Plot::setSelected(bool selected)
+{
+    this->selected = selected;
+    qDebug()<<"Selected changed : ";
 }
 
 QString Plot::nom() const
@@ -102,22 +112,7 @@ void Plot::standBy()
     //Bloquer 1 seconde......
 }
 
-void Plot::affecterBatterie(const QByteArray &batteryValue)
-{
-    // Afficher la valeur de la batterie
-    qDebug() << "Valeur de la batterie : " << batteryValue;
 
-    // Convertir la valeur de la batterie en entier
-    int batteryLevel = batteryValue.toInt();
-    this->nvBatterie = batteryLevel;
-
-    // Effectuer d'autres opérations en fonction de la valeur de la batterie
-    if (batteryLevel >= 50) {
-        qDebug() << "La batterie est suffisamment chargée.";
-    } else {
-        qDebug() << "La batterie est faible, veuillez la recharger.";
-    }
-}
 
 QLowEnergyController *Plot::getControllerBle() const
 {

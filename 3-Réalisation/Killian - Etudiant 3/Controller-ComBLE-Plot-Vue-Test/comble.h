@@ -1,3 +1,5 @@
+/*ComBLE.h*/
+
 #ifndef COMBLE_H
 #define COMBLE_H
 
@@ -7,6 +9,7 @@
 #include <QLowEnergyCharacteristic>
 #include <QLowEnergyService>
 #include <QLowEnergyController>
+#include <controller.h>
 
 #define SERVICE_UUID_BATTERIE "0000180F-0000-1000-8000-00805F9B34FB"
 #define CHARACTERISTIC_UUID_BATTERIE  "0000180F-0000-1000-8000-00805F9B34FB"
@@ -30,7 +33,9 @@ signals:
     void characteristicValueChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value);
     void characteristicValuesReady(const QList<QByteArray> &values);
     void serviceDetecte(QLowEnergyService* service);
-    void batterieLue(const QByteArray &newValue);
+    void batterieLue(QLowEnergyService* service,  QByteArray newValue);
+    void valeurLue(QLowEnergyService* &service, const QByteArray &value);
+
 
 public slots:
     void startScanning();
@@ -39,6 +44,7 @@ public slots:
     void terminerScanDevice();
 
     void serviceStateChanged(QLowEnergyService::ServiceState newState);
+
     //void lireValeurCharacteristicBattery(QLowEnergyService* service);
 
 

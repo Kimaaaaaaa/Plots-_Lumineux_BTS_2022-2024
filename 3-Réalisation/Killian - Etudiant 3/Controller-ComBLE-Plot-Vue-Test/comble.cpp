@@ -1,3 +1,6 @@
+/*ComBLE*/
+
+
 #include "comble.h"
 #include <QDebug>
 
@@ -127,7 +130,7 @@ void ComBLE::scanServices(QLowEnergyController *controllerBle){
             if (characteristic.isValid()) {
                 qDebug() << "Valeur actuelle de la caractéristique : " << characteristic.value();
 
-                emit batterieLue(characteristic.value());
+                emit batterieLue(service, characteristic.value());
             }
         }
     });
@@ -163,6 +166,8 @@ void ComBLE::serviceStateChanged(QLowEnergyService::ServiceState newState)
     }
 }
 
+
+
 /*void ComBLE::lireValeurCharacteristicBattery(QLowEnergyService *service)
 {
 
@@ -189,6 +194,7 @@ QList<QByteArray> ComBLE::recupererValeurCharacteristic(QLowEnergyService* servi
         listeValeur.append(characteristic.value());
 
         qDebug() << "Valeur de la characteristic " << characteristic.name() << "du device " <<    " : "  << characteristic.value();
+        emit valeurLue(service, characteristic.value() );
     }
 
 

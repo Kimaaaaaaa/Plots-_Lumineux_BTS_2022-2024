@@ -1,4 +1,4 @@
-
+/*Controller.h*/
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
@@ -19,6 +19,7 @@ class Controller: public QObject
 
 
 
+
 public:
     Controller();
     Q_INVOKABLE void couplerPlot(int index);
@@ -26,6 +27,7 @@ public:
     QQmlListProperty<Plot> getListePlots();
     ComBLE* com() const;
     QString getNomDernierPlotTrouve();
+    void addPlotTest(int id);
 
 
 
@@ -46,10 +48,14 @@ signals:
     void statutScanEnCours();
     void statutScanTermine();
     void batteryValueChanged(const QByteArray &batteryValue);
+    void selectedPlotsCountChanged();
 
 private:
     QList<Plot*> listePlots;
+    QList<Plot*> listePlotsSelected;
     ComBLE * m_com;
+    int m_selectedPlotsCount = 0;
+
 
 };
 
