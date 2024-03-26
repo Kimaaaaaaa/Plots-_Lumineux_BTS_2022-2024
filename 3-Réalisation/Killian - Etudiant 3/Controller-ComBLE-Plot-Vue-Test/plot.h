@@ -19,6 +19,7 @@ class Plot : public QObject
     Q_PROPERTY(int nvBatterie READ getNvBatterie NOTIFY nvBatterieChanged)
     Q_PROPERTY(QString nom READ getNom NOTIFY nomChanged)
     Q_PROPERTY(bool selected READ getSelected WRITE setSelected NOTIFY selectedChanged)
+    Q_PROPERTY(int idPlot READ getId WRITE setId)
 
 public:
     Plot();

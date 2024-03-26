@@ -3,6 +3,7 @@ import QtQuick.Controls 2.15
 
 Item{
 
+    property int idPlot
     property string nomPlot
     property int nvBatteriePlot
     property bool selectedPlot
@@ -28,7 +29,9 @@ Item{
             font.bold: true
         }
         Text{
-            text: "ID du plot : " + controller.getIdPlot()
+            "ID du plot : " + idPlot
+)
+           text: "ID du plot : " + idPlot
 
 
         }

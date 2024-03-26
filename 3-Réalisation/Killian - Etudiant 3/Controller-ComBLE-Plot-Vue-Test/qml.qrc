@@ -2,5 +2,7 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>PlotVue.qml</file>
+        <file>Sentrainer.qml</file>
+        <file>ConfigurerPlots.qml</file>
     </qresource>
 </RCC>

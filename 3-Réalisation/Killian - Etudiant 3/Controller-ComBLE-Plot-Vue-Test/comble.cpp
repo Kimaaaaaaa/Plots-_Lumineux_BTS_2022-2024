@@ -43,7 +43,7 @@ void ComBLE::stopScanning()
 
 void ComBLE::deviceDetecte(const QBluetoothDeviceInfo &info)
 {
-    if(info.name().contains("Plot") || info.name().contains("PLOT"))
+    if(info.name().contains("Plot") || info.name().contains("PLOT") || info.name().contains("plot"))
     {
         qDebug() << "Device trouvé !";
         qDebug() << "Nom du périphérique:" << info.name();

@@ -91,6 +91,7 @@ void Controller::addPlotTest(int id)
     //if(deviceInfo.name().contains("Plot")) {
         // Créer un nouveau plot avec le nom du périphérique
         Plot *newPlot = new Plot();
+        qDebug() << id;
         newPlot->setId(id);
 
 
@@ -104,6 +105,15 @@ void Controller::addPlotTest(int id)
 
 void Controller::addPlot(const QBluetoothDeviceInfo &deviceInfo)
 {
+
+    //Pour tester
+    for(int i = 0; i < 12; i++)
+    {
+
+        addPlotTest(i + 1);
+    }
+
+
     // Vérifier si le périphérique existe déjà dans la liste des plots
     bool plotExists = false;
     for (Plot *plot : listePlots) {
@@ -120,9 +130,10 @@ void Controller::addPlot(const QBluetoothDeviceInfo &deviceInfo)
         Plot *newPlot = new Plot();
         newPlot->setNom(deviceInfo.name());
         newPlot->setId(listePlots.size() + 1); // Utiliser la taille actuelle de la liste comme ID du plot
-
-        qDebug() << "TEST!!!!!";
         listePlots.append(newPlot);
+
+        qDebug() << "id du plot : " + QString(listePlots.last()->getId());
+
 
 
         //créer le controller BLE pour le device (plot)
@@ -176,11 +187,6 @@ void Controller::addPlot(const QBluetoothDeviceInfo &deviceInfo)
 
     //Pour tester
 
-    for(int i = 0; i < 12; i++)
-    {
-
-        addPlotTest(i + 1);
-    }
 
 }
 
