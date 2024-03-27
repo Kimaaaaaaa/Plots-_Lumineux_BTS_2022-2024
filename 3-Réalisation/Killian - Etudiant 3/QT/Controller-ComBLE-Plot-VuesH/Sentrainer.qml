@@ -16,28 +16,68 @@ Item {
     property int nbPlotSelectionnes: 0
 
 
-    // Define a property to hold the selected plots
+
     property var selectedPlots: []
 
-    ListView {
+    GridView {
         id: listePlotsSelected
         anchors.fill: parent
-        anchors.topMargin: 176
-        anchors.leftMargin: 0
+        cellHeight: cellWidth
+        cellWidth: parent.width/2
+        interactive: false
+        // orientation: ListView.Horizontal
+        anchors.topMargin: 100
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        anchors.bottom: detectButton.top
+        anchors.bottom: parent.top
         anchors.bottomMargin: 33
         model: selectedPlots
-        delegate: PlotVue{
+        delegate: PlotSelectedVue{
             nomPlot: nom
             nvBatteriePlot: nvBatterie
             idPlot: id
+            isSelect: false
+
         }
     }
+
+    Button {
+        id: test
+
+        text: "Lancer la partie"
+        anchors.bottomMargin: 44
+
+        width: 159
+        height: 33
+        anchors {
+            bottom: parent.bottom  // Ancre le bas du bouton au bas de la fenêtre
+            horizontalCenter: parent.horizontalCenter  // Centre horizontalement le bouton dans la fenêtre
+        }
+
+
+
+        background: Rectangle {
+            anchors.fill: parent
+            color: "#FFB22A"
+            border.color:  "black"
+            border.width: 1
+        }
+
+        onClicked: {
+                  console.log("allumer plot aleatoire");
+                  controller.allumerPlotAleatoire();
+              }
+    }
+
 }
 
 
 
 
+
+/*##^##
+Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+##^##*/

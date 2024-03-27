@@ -4,5 +4,6 @@
         <file>PlotVue.qml</file>
         <file>Sentrainer.qml</file>
         <file>ConfigurerPlots.qml</file>
+        <file>PlotSelectedVue.qml</file>
     </qresource>
 </RCC>

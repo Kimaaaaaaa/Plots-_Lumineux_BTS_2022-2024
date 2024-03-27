@@ -58,7 +58,7 @@ Item {
 
     // Définir un modèle de bouton pour débuter la partie
     Button {
-        id: test
+        id: debuterPartie
 
         text: "Débuter partie"
         anchors.bottomMargin: 44
@@ -91,16 +91,20 @@ Item {
     ListView {
         id: listPlot
         anchors.left: parent.left
+        anchors.leftMargin: 10
         anchors.right: parent.right
+        anchors.rightMargin: 10
         anchors.top: parent.top
         anchors.bottom: detectButton.top
         anchors.bottomMargin: 33
+        spacing: 5
         model: controller.listePlots
         delegate: PlotVue {
             nomPlot: nom
             nvBatteriePlot: nvBatterie
             idPlot: id
             selectedPlot: selected
+            isSelect: true
 
             onSelectedPlotChanged: {
                 selected = selectedPlot;

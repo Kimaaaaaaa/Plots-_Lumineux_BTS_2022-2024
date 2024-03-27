@@ -8,12 +8,14 @@ Item {
     property bool selectedPlot
     property bool isSelect : true
 
-    width: parent.width // Définir la largeur de l'élément sur la largeur de la liste
-    height: 60 // Hauteur de l'élément
+    width: parent.width / 2 // Définir la largeur de l'élément sur la largeur de la liste
+    height: width // Hauteur de l'élément
     Rectangle {
-        width: parent.width
-        height: parent.height
-        color: selectedPlot ? "#FFB22A" : "#00B000" // Couleur orange
+        id: rectangle
+        color: "#c4c7c4"
+        anchors.fill: parent
+        anchors.margins: 10
+        radius: parent.width/2 // Couleur orange
         border.color: "black" // Couleur de la bordure
         Text {
             text: "Nom : " + nomPlot // Afficher le nom du périphérique
@@ -22,18 +24,17 @@ Item {
             topPadding: 30
         }
         Text {
-            text: "Niveau de batterie : " + nvBatteriePlot + "%" // Afficher le nom du périphérique
+            text: "0%"
+            // Afficher le nom du périphérique
             anchors.centerIn: parent
             font.bold: true
         }
         Text {
-            y: 0
-            text: "ID du plot : " + idPlot // Utilisation de la propriété idPlot au lieu de id
-            anchors.horizontalCenterOffset: -148
+            text: "ID du plot : " + idPlot
+            anchors.horizontalCenter: parent.horizontalCenter // Utilisation de la propriété idPlot au lieu de id
             anchors {
-                horizontalCenter: parent.horizontalCenter
                 bottom: parent.bottom
-                bottomMargin: 47
+                bottomMargin: 53
             }
         }
 

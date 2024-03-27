@@ -28,12 +28,14 @@ public:
     Q_INVOKABLE void couplerPlot(int index);
     Q_INVOKABLE void addSelectedPlots(const int);
     Q_INVOKABLE void removeSelectedPlots(const int);
+    Q_INVOKABLE void allumerPlotAleatoire();
     QQmlListProperty<Plot> getListePlots();
     QQmlListProperty<Plot> getListePlotsSelected();
     ComBLE* com() const;
     QString getNomDernierPlotTrouve();
     int getLastPlotId();
     void addPlotTest();
+
 
 
 

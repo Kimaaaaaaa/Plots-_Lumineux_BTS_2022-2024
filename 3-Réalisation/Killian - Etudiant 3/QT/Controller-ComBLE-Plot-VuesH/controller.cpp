@@ -101,6 +101,16 @@ void Controller::removeSelectedPlots(const int id)
     }
 }
 
+void Controller::allumerPlotAleatoire()
+{
+    int indexPlot = rand() % listePlotsSelected.size() - 1;
+
+    qDebug() << "Index du plot allumé : " << indexPlot;
+    qDebug() << "Id de plot allumé : " << listePlotsSelected.at(indexPlot)->getId();
+
+
+}
+
 
 
 
