@@ -21,6 +21,27 @@ Item {
 
     GridView {
         id: listePlotsSelected
+
+        Connections {
+            target: controller
+            function onPlotAllumeChanged(index, color, id) {
+                listePlotsSelected.updatePlotColor(index, color);
+            }
+        }
+
+        function updatePlotColor(index, color) {
+            // Vérifiez si l'index est valide
+            if (index >= 0 && index < selectedPlots.length) {
+                // Mettez à jour la couleur du plot à l'index spécifié
+                console.log("Couleur : " + color);
+                console.log("Index du plot : " + index);
+                selectedPlots[index].color = color;
+            }
+        }
+
+
+
+
         anchors.fill: parent
         cellHeight: cellWidth
         cellWidth: parent.width/2
@@ -38,9 +59,21 @@ Item {
             nvBatteriePlot: nvBatterie
             idPlot: id
             isSelect: false
-
+            color: getColorById(idPlot) // Utilisez la fonction pour obtenir la couleur en fonction de l'ID
         }
     }
+
+    function getColorById(id) {
+        switch(id) {
+            case 0: return "red"; // Utilisez les ID pour déterminer la couleur
+            case 1: return "blue";
+            case 2: return "green";
+            case 3: return "yellow";
+            case 4: return "white";
+            default: return "#c4c7c4";
+        }
+    }
+
 
     Button {
         id: test

@@ -19,6 +19,7 @@ Item {
         function onStatutScanEnCours() {
             detectButton.enabled = false
             detectButton.text = "Scan en cours ...."
+            debuterPartie.enabled = false
         }
     }
     Connections {
@@ -26,6 +27,7 @@ Item {
         function onStatutScanTermine() {
             detectButton.enabled = true
             detectButton.text = "Détecter les plots"
+            debuterPartie.enabled = true
         }
     }
 
@@ -86,6 +88,8 @@ Item {
 
                     sentrainerPage.selectedPlots = controller.listePlotsSelected;
               }
+
+
     }
 
     ListView {

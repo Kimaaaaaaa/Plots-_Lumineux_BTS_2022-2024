@@ -51,6 +51,7 @@ public slots:
 
 
 
+
     void afficherPlots();
 signals:
     void listePlotsChanged();
@@ -60,6 +61,7 @@ signals:
     void statutScanEnCours();
     void statutScanTermine();
     void batteryValueChanged(const QByteArray &batteryValue);
+    void plotAllumeChanged(int idPlotAllume, QString color, int idPlot);
 
 
 

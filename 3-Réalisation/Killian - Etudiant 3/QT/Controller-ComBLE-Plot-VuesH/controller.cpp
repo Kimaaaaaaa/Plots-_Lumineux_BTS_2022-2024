@@ -103,12 +103,19 @@ void Controller::removeSelectedPlots(const int id)
 
 void Controller::allumerPlotAleatoire()
 {
-    int indexPlot = rand() % listePlotsSelected.size() - 1;
+    QString tableauDeCouleur[] = {"red", "blue", "green", "yellow", "white"};
+    int lengthTableauDeCouleur = sizeof(tableauDeCouleur) / sizeof(*tableauDeCouleur);
+    QString couleurAleatoire = tableauDeCouleur[rand() % lengthTableauDeCouleur];
 
-    qDebug() << "Index du plot allumé : " << indexPlot;
-    qDebug() << "Id de plot allumé : " << listePlotsSelected.at(indexPlot)->getId();
+    int indexPlot = 4; // Définir l'indexPlot sur 4 pour sélectionner le plot avec l'ID 4
 
-
+    // Vérifier si l'indexPlot est valide
+    if (indexPlot >= 0 && indexPlot < listePlotsSelected.size()) {
+        // Émettre le signal avec la couleur aléatoire pour le plot avec l'ID 4
+        emit plotAllumeChanged(indexPlot, couleurAleatoire, listePlotsSelected.at(indexPlot)->getId());
+    } else {
+        qDebug() << "Erreur : l'indexPlot est invalide.";
+    }
 }
 
 
