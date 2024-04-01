@@ -29,12 +29,14 @@ public:
     Q_INVOKABLE void addSelectedPlots(const int);
     Q_INVOKABLE void removeSelectedPlots(const int);
     Q_INVOKABLE void allumerPlotAleatoire();
+    Q_INVOKABLE int getIndexByIdSelectedPlot(int index);
     QQmlListProperty<Plot> getListePlots();
     QQmlListProperty<Plot> getListePlotsSelected();
     ComBLE* com() const;
     QString getNomDernierPlotTrouve();
     int getLastPlotId();
     void addPlotTest();
+
 
 
 
@@ -61,7 +63,7 @@ signals:
     void statutScanEnCours();
     void statutScanTermine();
     void batteryValueChanged(const QByteArray &batteryValue);
-    void plotAllumeChanged(int idPlotAllume, QString color, int idPlot);
+    void plotAllumeChanged(int idPlotAllume, QVariant colorVariant);
 
 
 

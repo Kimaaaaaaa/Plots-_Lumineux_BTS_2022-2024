@@ -103,19 +103,42 @@ void Controller::removeSelectedPlots(const int id)
 
 void Controller::allumerPlotAleatoire()
 {
+
+    qDebug("dqsdsqdsqdqsdsqdsqdqsdsqsdq!!!");
     QString tableauDeCouleur[] = {"red", "blue", "green", "yellow", "white"};
     int lengthTableauDeCouleur = sizeof(tableauDeCouleur) / sizeof(*tableauDeCouleur);
     QString couleurAleatoire = tableauDeCouleur[rand() % lengthTableauDeCouleur];
 
-    int indexPlot = 4; // Définir l'indexPlot sur 4 pour sélectionner le plot avec l'ID 4
+    int indexPlot = (rand()  % (lengthTableauDeCouleur - 1)); // Index du plot que vous voulez modifier dans votre liste
+    qDebug() << "Index : "<< indexPlot;
+    int idPlot = listePlotsSelected.at(indexPlot)->getId();
+
+    qDebug()<< "ID Plot : " << idPlot;
 
     // Vérifier si l'indexPlot est valide
     if (indexPlot >= 0 && indexPlot < listePlotsSelected.size()) {
-        // Émettre le signal avec la couleur aléatoire pour le plot avec l'ID 4
-        emit plotAllumeChanged(indexPlot, couleurAleatoire, listePlotsSelected.at(indexPlot)->getId());
+        // Émettre le signal avec la couleur aléatoire pour le plot avec l'index spécifié
+        emit plotAllumeChanged(idPlot, couleurAleatoire);
     } else {
         qDebug() << "Erreur : l'indexPlot est invalide.";
     }
+
+}
+
+int Controller::getIndexByIdSelectedPlot(int id)
+{
+    int indexPlot = -1;
+
+    for(int i = 0; i < listePlotsSelected.size(); i++)
+    {
+        if(id == listePlotsSelected.at(i)->getId())
+        {
+            indexPlot = i;
+            qDebug() <<indexPlot;
+        }
+    }
+
+    return indexPlot;
 }
 
 

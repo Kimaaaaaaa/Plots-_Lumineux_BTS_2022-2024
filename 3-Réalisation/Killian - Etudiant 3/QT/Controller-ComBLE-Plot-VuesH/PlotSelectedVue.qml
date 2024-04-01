@@ -4,10 +4,12 @@ import QtQuick.Controls 2.15
 Item {
     property int idPlot
     property string nomPlot
+    property string indexListe
     property int nvBatteriePlot
     property bool selectedPlot
     property bool isSelect : true
     property string color // Ajoutez une propriété pour la couleur
+
 
     width: parent.width / 2 // Définir la largeur de l'élément sur la largeur de la liste
     height: width // Hauteur de l'élément

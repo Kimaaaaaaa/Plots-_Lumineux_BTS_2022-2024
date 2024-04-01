@@ -1,4 +1,3 @@
-
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 
@@ -17,27 +16,37 @@ Item {
 
 
 
+
     property var selectedPlots: []
 
     GridView {
         id: listePlotsSelected
 
-        Connections {
-            target: controller
-            function onPlotAllumeChanged(index, color, id) {
-                listePlotsSelected.updatePlotColor(index, color);
+        function updatePlotColor(index, newColor) {
+
+            var item = listePlotsSelected.itemAtIndex(index);
+            if (item) {
+                // Mettre à jour la couleur de l'élément
+                item.color = newColor;
+            } else {
+                console.error("Impossible de trouver l'élément à l'index", index);
             }
         }
 
-        function updatePlotColor(index, color) {
-            // Vérifiez si l'index est valide
-            if (index >= 0 && index < selectedPlots.length) {
-                // Mettez à jour la couleur du plot à l'index spécifié
-                console.log("Couleur : " + color);
-                console.log("Index du plot : " + index);
-                selectedPlots[index].color = color;
+        Connections {
+            target: controller
+            onPlotAllumeChanged: {
+                var color = colorVariant.toString();
+                var index = controller.getIndexByIdSelectedPlot(idPlotAllume);
+
+                console.log("Plot allumé avec la couleur :", color);
+                console.log("Plot allumé à l'index :", index);
+                listePlotsSelected.updatePlotColor(index, color); // Passer la couleur comme paramètre
             }
         }
+
+
+
 
 
 
@@ -59,24 +68,17 @@ Item {
             nvBatteriePlot: nvBatterie
             idPlot: id
             isSelect: false
-            color: getColorById(idPlot) // Utilisez la fonction pour obtenir la couleur en fonction de l'ID
+            color: "#D3D3D3"
+            indexListe: index
         }
     }
 
-    function getColorById(id) {
-        switch(id) {
-            case 0: return "red"; // Utilisez les ID pour déterminer la couleur
-            case 1: return "blue";
-            case 2: return "green";
-            case 3: return "yellow";
-            case 4: return "white";
-            default: return "#c4c7c4";
-        }
-    }
+
+
 
 
     Button {
-        id: test
+        id: btnLancerLaPartie
 
         text: "Lancer la partie"
         anchors.bottomMargin: 44
