@@ -25,6 +25,7 @@ public:
 
     bool isScanning() const;
 
+    void writeCharacteristic(QLowEnergyController *controller, const QBluetoothUuid &serviceUuid, const QLowEnergyCharacteristic &characteristicUuid, const QByteArray &data);
 signals:
     void deviceDiscovered(const QBluetoothDeviceInfo &deviceInfo);
     void scanningChanged();

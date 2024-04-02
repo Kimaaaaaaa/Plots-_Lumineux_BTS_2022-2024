@@ -133,6 +133,11 @@ void Plot::setControllerBle(QLowEnergyController *newController)
     controllerBle = newController;
 }
 
+void Plot::allumerPlot(QString couleur)
+{
+
+}
+
 
 
 

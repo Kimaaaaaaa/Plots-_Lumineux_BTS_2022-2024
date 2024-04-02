@@ -4,6 +4,11 @@
 #include "plot.h"
 #include <QDebug>
 
+#define SERVICE_BATTERY_UUID "0000180F-0000-1000-8000-00805F9B34FB"
+#define CHARACTERISTIC_BATTERY_UUID_TX  "0000180F-0000-1000-8000-00805F9B34FB"
+#define SERVICE_PLOT_UUID "4fafc202-1fb5-459e-8fcc-c5c9c331914b"
+#define UUID_Characteristic_Couleur "beb5483e-36e1-4688-b7f5-ea07361b26ab"
+
 Controller::Controller()
 {
     m_com = new ComBLE();
@@ -109,7 +114,7 @@ void Controller::allumerPlotAleatoire()
     int lengthTableauDeCouleur = sizeof(tableauDeCouleur) / sizeof(*tableauDeCouleur);
     QString couleurAleatoire = tableauDeCouleur[rand() % lengthTableauDeCouleur];
 
-    int indexPlot = (rand()  % (lengthTableauDeCouleur - 1)); // Index du plot que vous voulez modifier dans votre liste
+    int indexPlot = rand()  % lengthTableauDeCouleur; // Index du plot que vous voulez modifier dans votre liste
     qDebug() << "Index : "<< indexPlot;
     int idPlot = listePlotsSelected.at(indexPlot)->getId();
 
@@ -256,6 +261,25 @@ void Controller::couplerPlot(int index)
         plot->activerPlot(plot,"1");
     }
 }
+
+
+void Controller::writeDataToDevice(QLowEnergyService *service, const QLowEnergyCharacteristic &characteristic, const QByteArray &data)
+{
+    if (m_com) {
+        m_com->writeCharacteristic(getControllerBLE(), service->serviceUuid(), characteristic, data);
+    }
+}
+
+/*QLowEnergyController* Controller::getControllerBLE()
+{
+    return controllerBLE;
+}
+
+void Controller::setControllerBLE(QLowEnergyController* controllerBLE)
+{
+    this->controllerBLE = controllerBLE;
+}
+*/
 
 /*void Controller::addSelectedPlots(const QVariant &selectedPlotsVariant)
 {

@@ -200,3 +200,13 @@ QList<QByteArray> ComBLE::recupererValeurCharacteristic(QLowEnergyService* servi
 
     return listeValeur;
 }
+void ComBLE::writeCharacteristic(QLowEnergyController *controller, const QBluetoothUuid &serviceUuid, const QLowEnergyCharacteristic &characteristicUuid, const QByteArray &data)
+{
+    if (controller && controller->state() == QLowEnergyController::ConnectedState) {
+        QLowEnergyService *service = controller->createServiceObject(serviceUuid, controller);
+        if (service) {
+            service->writeCharacteristic(characteristicUuid, data);
+        }
+    }
+}
+

@@ -44,6 +44,7 @@ public:
     QString getNom();
     QLowEnergyController *getControllerBle() const;
     void setControllerBle(QLowEnergyController *newController);
+    void allumerPlot(QString couleur);
 
 
 signals:
