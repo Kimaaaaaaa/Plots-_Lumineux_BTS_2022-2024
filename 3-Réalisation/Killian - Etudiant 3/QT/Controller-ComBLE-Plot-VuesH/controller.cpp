@@ -114,9 +114,10 @@ void Controller::allumerPlotAleatoire()
     int lengthTableauDeCouleur = sizeof(tableauDeCouleur) / sizeof(*tableauDeCouleur);
     QString couleurAleatoire = tableauDeCouleur[rand() % lengthTableauDeCouleur];
 
-    int indexPlot = rand()  % lengthTableauDeCouleur; // Index du plot que vous voulez modifier dans votre liste
+    int indexPlot = rand()  % listePlotsSelected.size(); // Index du plot que vous voulez modifier dans votre liste
     qDebug() << "Index : "<< indexPlot;
     int idPlot = listePlotsSelected.at(indexPlot)->getId();
+    listePlotsSelected.at(indexPlot)->ecrireCouleurCharacteristic(couleurAleatoire);
 
     qDebug()<< "ID Plot : " << idPlot;
 
@@ -263,12 +264,7 @@ void Controller::couplerPlot(int index)
 }
 
 
-void Controller::writeDataToDevice(QLowEnergyService *service, const QLowEnergyCharacteristic &characteristic, const QByteArray &data)
-{
-    if (m_com) {
-        m_com->writeCharacteristic(getControllerBLE(), service->serviceUuid(), characteristic, data);
-    }
-}
+
 
 /*QLowEnergyController* Controller::getControllerBLE()
 {

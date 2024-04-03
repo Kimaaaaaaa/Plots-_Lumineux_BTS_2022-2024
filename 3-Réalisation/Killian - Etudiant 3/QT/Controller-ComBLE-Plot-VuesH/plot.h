@@ -8,6 +8,9 @@
 #include <QLowEnergyCharacteristic>
 #include <QDebug>
 #include <QBluetoothUuid>
+#include <QLowEnergyCharacteristic>
+#include <QLowEnergyService>
+#include <QLowEnergyController>
 
 class ComBLE;
 
@@ -44,7 +47,9 @@ public:
     QString getNom();
     QLowEnergyController *getControllerBle() const;
     void setControllerBle(QLowEnergyController *newController);
-    void allumerPlot(QString couleur);
+    //void allumerPlot(QString couleur);
+
+     void ecrireCouleurCharacteristic(const QString &couleur);
 
 
 signals:

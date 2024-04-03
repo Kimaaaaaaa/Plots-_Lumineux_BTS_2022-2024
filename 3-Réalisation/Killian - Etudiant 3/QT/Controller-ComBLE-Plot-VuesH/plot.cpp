@@ -3,6 +3,11 @@
 
 #include "plot.h"
 
+#define SERVICE_BATTERY_UUID "0000180F-0000-1000-8000-00805F9B34FB"
+#define CHARACTERISTIC_BATTERY_UUID_TX  "0000180F-0000-1000-8000-00805F9B34FB"
+#define SERVICE_PLOT_UUID "4fafc202-1fb5-459e-8fcc-c5c9c331914b"
+#define UUID_Characteristic_Couleur "beb5483e-36e1-4688-b7f5-ea07361b26ab"
+
 /*Constructeur*/
 
 
@@ -109,7 +114,7 @@ int Plot::getId() const {
 
 void Plot::standBy()
 {
-/*
+    /*
     for(int i = 0; i < this->listePlot.count(); i++)
     {
         desactiverPlot(listePlot.takeAt(i));
@@ -133,11 +138,56 @@ void Plot::setControllerBle(QLowEnergyController *newController)
     controllerBle = newController;
 }
 
-void Plot::allumerPlot(QString couleur)
+
+
+void Plot::ecrireCouleurCharacteristic(const QString &couleur)
 {
 
-}
+    if (!controllerBle) {
+        qWarning() << "Controller BLE is not initialized.";
+        return;
+    }
 
+    // Assuming controllerBle has been properly initialized elsewhere in your class
+    QLowEnergyService *servicePlot = nullptr;
+    // Find the service by UUID, assuming controllerBle is already connected and discovered services
+    auto services = controllerBle->services();
+    for (const auto &serviceUuid : services) {
+        if (serviceUuid == QBluetoothUuid(QStringLiteral(SERVICE_PLOT_UUID))) {
+            servicePlot = controllerBle->createServiceObject(serviceUuid, this);
+            break;
+        }
+    }
+
+    if (!servicePlot) {
+        qWarning() << "Service Plot not found";
+        return;
+    }
+
+    // Anttendre de découvrir le service
+    if (servicePlot->state() == QLowEnergyService::DiscoveryRequired) {
+        QObject::connect(servicePlot, &QLowEnergyService::stateChanged, this, [this, servicePlot, couleur](QLowEnergyService::ServiceState newState) {
+            if (newState == QLowEnergyService::ServiceDiscovered) {
+                qDebug() << "État actuel du service : " << servicePlot->state();
+                this->ecrireCouleurCharacteristic(couleur);
+            }
+        });
+        servicePlot->discoverDetails();
+        return;
+    }
+
+    // Assuming you have defined the UUID for the "color" characteristic
+    QBluetoothUuid characteristicCouleurUuid(QStringLiteral(UUID_Characteristic_Couleur));
+    QLowEnergyCharacteristic characteristicCouleur = servicePlot->characteristic(characteristicCouleurUuid);
+    if (!characteristicCouleur.isValid()) {
+        qWarning() << "Characteristic Couleur not found";
+        return;
+    }
+
+    QByteArray dataByteArray = couleur.toUtf8();
+    // Write the color value to the characteristic
+    servicePlot->writeCharacteristic(characteristicCouleur, dataByteArray, QLowEnergyService::WriteWithoutResponse);
+}
 
 
 
