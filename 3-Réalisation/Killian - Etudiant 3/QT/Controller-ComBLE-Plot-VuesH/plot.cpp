@@ -6,7 +6,7 @@
 #define SERVICE_BATTERY_UUID "0000180F-0000-1000-8000-00805F9B34FB"
 #define CHARACTERISTIC_BATTERY_UUID_TX  "0000180F-0000-1000-8000-00805F9B34FB"
 #define SERVICE_PLOT_UUID "4fafc202-1fb5-459e-8fcc-c5c9c331914b"
-#define UUID_Characteristic_Couleur "beb5483e-36e1-4688-b7f5-ea07361b26ab"
+#define UUID_Characteristic_Couleur "8cd233ac-a2ca-450e-a7a2-d114bd53e2a3"
 
 /*Constructeur*/
 
@@ -33,7 +33,7 @@ Plot::Plot()
 
 
     this->couleur = nullptr;
-    nvBatterie = 10;
+    //nvBatterie = nullptr;
     selected = false;
 
 }
@@ -145,7 +145,14 @@ void Plot::ecrireCouleurCharacteristic(const QString &couleur)
 
     if (!controllerBle) {
         qWarning() << "Controller BLE is not initialized.";
-        return;
+
+    }
+
+    // Initialiser le contrôleur BLE en tant que rôle central
+    if (controllerBle->role() != QLowEnergyController::CentralRole) {
+        controllerBle->setRemoteAddressType(QLowEnergyController::PublicAddress);
+        controllerBle->connectToDevice();
+
     }
 
     // Assuming controllerBle has been properly initialized elsewhere in your class
@@ -161,7 +168,7 @@ void Plot::ecrireCouleurCharacteristic(const QString &couleur)
 
     if (!servicePlot) {
         qWarning() << "Service Plot not found";
-        return;
+
     }
 
     // Anttendre de découvrir le service
@@ -173,19 +180,16 @@ void Plot::ecrireCouleurCharacteristic(const QString &couleur)
             }
         });
         servicePlot->discoverDetails();
-        return;
+
     }
 
-    // Assuming you have defined the UUID for the "color" characteristic
     QBluetoothUuid characteristicCouleurUuid(QStringLiteral(UUID_Characteristic_Couleur));
     QLowEnergyCharacteristic characteristicCouleur = servicePlot->characteristic(characteristicCouleurUuid);
     if (!characteristicCouleur.isValid()) {
         qWarning() << "Characteristic Couleur not found";
-        return;
     }
 
     QByteArray dataByteArray = couleur.toUtf8();
-    // Write the color value to the characteristic
     servicePlot->writeCharacteristic(characteristicCouleur, dataByteArray, QLowEnergyService::WriteWithoutResponse);
 }
 

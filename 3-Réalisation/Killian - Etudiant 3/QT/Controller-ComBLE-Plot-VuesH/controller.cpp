@@ -117,6 +117,8 @@ void Controller::allumerPlotAleatoire()
     int indexPlot = rand()  % listePlotsSelected.size(); // Index du plot que vous voulez modifier dans votre liste
     qDebug() << "Index : "<< indexPlot;
     int idPlot = listePlotsSelected.at(indexPlot)->getId();
+
+
     listePlotsSelected.at(indexPlot)->ecrireCouleurCharacteristic(couleurAleatoire);
 
     qDebug()<< "ID Plot : " << idPlot;
