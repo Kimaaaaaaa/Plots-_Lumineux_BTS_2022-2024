@@ -11,6 +11,7 @@
 #include <QLowEnergyCharacteristic>
 #include <QLowEnergyService>
 #include <QLowEnergyController>
+#include <QTimer>
 
 class ComBLE;
 
@@ -65,6 +66,8 @@ signals:
 
 public slots:
     void standBy();
+    void writeTimeout();
+
 
 
 

@@ -3,8 +3,8 @@
 
 #include "plot.h"
 
-#define SERVICE_BATTERY_UUID "0000180F-0000-1000-8000-00805F9B34FB"
-#define CHARACTERISTIC_BATTERY_UUID_TX  "0000180F-0000-1000-8000-00805F9B34FB"
+#define SERVICE_BATTERY_UUID "0000180f-0000-1000-8000-00805f9b34fb"
+#define CHARACTERISTIC_BATTERY_UUID_TX  "0000180f-0000-1000-8000-00805f9b34fb"
 #define SERVICE_PLOT_UUID "4fafc202-1fb5-459e-8fcc-c5c9c331914b"
 #define UUID_Characteristic_Couleur "8cd233ac-a2ca-450e-a7a2-d114bd53e2a3"
 
@@ -17,6 +17,7 @@ Plot::Plot()
 {
     connect(this, &Plot::tempsRecu,
             this, &Plot::standBy);
+
 
 
     m_id = s_nextId++;
@@ -123,6 +124,11 @@ void Plot::standBy()
     //Bloquer 1 seconde......
 }
 
+void Plot::writeTimeout()
+{
+    qWarning() << "Write operation timed out.";
+}
+
 
 
 
@@ -155,10 +161,9 @@ void Plot::ecrireCouleurCharacteristic(const QString &couleur)
 
     }
 
-    // Assuming controllerBle has been properly initialized elsewhere in your class
     QLowEnergyService *servicePlot = nullptr;
-    // Find the service by UUID, assuming controllerBle is already connected and discovered services
-    auto services = controllerBle->services();
+
+    QList<QBluetoothUuid> services = controllerBle->services();
     for (const auto &serviceUuid : services) {
         if (serviceUuid == QBluetoothUuid(QStringLiteral(SERVICE_PLOT_UUID))) {
             servicePlot = controllerBle->createServiceObject(serviceUuid, this);
@@ -186,11 +191,16 @@ void Plot::ecrireCouleurCharacteristic(const QString &couleur)
     QBluetoothUuid characteristicCouleurUuid(QStringLiteral(UUID_Characteristic_Couleur));
     QLowEnergyCharacteristic characteristicCouleur = servicePlot->characteristic(characteristicCouleurUuid);
     if (!characteristicCouleur.isValid()) {
-        qWarning() << "Characteristic Couleur not found";
+        qWarning() << "Characteristic Couleur introuvable";
     }
 
     QByteArray dataByteArray = couleur.toUtf8();
+
+
+
+
     servicePlot->writeCharacteristic(characteristicCouleur, dataByteArray, QLowEnergyService::WriteWithoutResponse);
+
 }
 
 
