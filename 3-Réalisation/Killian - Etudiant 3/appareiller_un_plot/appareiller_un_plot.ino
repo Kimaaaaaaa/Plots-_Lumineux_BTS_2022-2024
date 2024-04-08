@@ -10,24 +10,31 @@ BLECharacteristic *pCharacteristicColor;
 bool deviceConnected = false;
 int txValue = 0;
 
-#define SERVICE_BATTERY_UUID "0000180F-0000-1000-8000-00805F9B34FB"
+
+#define SERVICE_BATTERY_UUID "0000180f-0000-1000-8000-00805f9b34fb"
 #define SERVICE_PLOT_UUID "4fafc202-1fb5-459e-8fcc-c5c9c331914b"
-#define UUID_Characteristic_Couleur "8cd233ac-a2ca-450e-a7a2-d114bd53e2a3"
+#define UUID_CHARACTERISTIC_COULEUR "8cd233ac-a2ca-450e-a7a2-d114bd53e2a3"
+
+
 
 class MyServerCallbacks : public BLEServerCallbacks {
   void onConnect(BLEServer* pServer) {
     deviceConnected = true;
+    Heltec.display->clear();
+    Heltec.display->drawString(0, 0, "Connecte");
+    Heltec.display->drawString(0, 10, "Couleur : éteint");
+    Heltec.display->display();
   };
 };
 
 // Function to handle data received for the color characteristic
 class MyCharacteristicCallbacks : public BLECharacteristicCallbacks {
   void onWrite(BLECharacteristic *pCharacteristic) {
-    std::string receivedData = pCharacteristic->getValue();
+    String receivedData = String(pCharacteristic->getValue().c_str());
     
     // Display received data on the screen
     Heltec.display->clear();
-    Heltec.display->drawString(0, 0, "Received data: " + String(receivedData.c_str()));
+    Heltec.display->drawString(10, 10, "Received data: " + receivedData);
     Heltec.display->display();
   }
 };
@@ -66,8 +73,8 @@ void setup() {
 
   // Create the BLE Plot Color Characteristic
   pCharacteristicColor = pServicePlot->createCharacteristic(
-                                           UUID_Characteristic_Couleur,
-                                           BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
+                                           UUID_CHARACTERISTIC_COULEUR,
+                                           BLECharacteristic::PROPERTY_WRITE
                                          );
 
   // Set data received callback for the color characteristic
@@ -83,5 +90,9 @@ void setup() {
 
 void loop() {
   
-if(deviceConnected)
+ /* pCharacteristicBattery->setValue("72");
+  pCharacteristicColor->setValue("green");
+  String color;
+  color = String(pCharacteristicColor->getValue().c_str());
+  Heltec.display->drawString(0, 0, "Couleur : " + color);*/
 }
