@@ -34,7 +34,7 @@ Plot::Plot()
 
 
     this->couleur = nullptr;
-    //nvBatterie = nullptr;
+    nvBatterie = 0;
     selected = false;
 
 }

@@ -7,6 +7,8 @@
 #include <QBluetoothDeviceDiscoveryAgent>
 #include <QQmlListProperty>
 #include <comble.h>
+#include <partie.h>
+#include <QRandomGenerator>
 
 class Controller: public QObject
 {
@@ -25,11 +27,14 @@ class Controller: public QObject
 public:
     Controller();
 
-    Q_INVOKABLE void couplerPlot(int index);
+
     Q_INVOKABLE void addSelectedPlots(const int);
     Q_INVOKABLE void removeSelectedPlots(const int);
     Q_INVOKABLE void allumerPlotAleatoire();
     Q_INVOKABLE int getIndexByIdSelectedPlot(int index);
+    Q_INVOKABLE void changerCouleurPlot(QString couleur, int id);
+    Q_INVOKABLE void lancerPartieJ1(int tempsPourAppuyer = 5, int nbCoup = 10, QString couleurJ1 = "red");
+
     //Q_INVOKABLE int lancerPartie(int temps);
     QQmlListProperty<Plot> getListePlots();
     QQmlListProperty<Plot> getListePlotsSelected();
@@ -38,6 +43,7 @@ public:
     int getLastPlotId();
     void addPlotTest();
     void writeDataToDevice(QLowEnergyService *service, const QLowEnergyCharacteristic &characteristic, const QByteArray &data);
+    const QList<Plot*> getListeSelectedPlot();
     /*QLowEnergyController* getControllerBLE();
     void setControllerBLE(QLowEnergyController * controllerBLE);
     */
@@ -52,6 +58,8 @@ public:
 public slots:
     void startScanning();
     void addPlot(const QBluetoothDeviceInfo &deviceInfo);
+    void startTimer(int tempsPourAppuyer);
+    void nextIteration(Partie* partie, int tempsPourAppuyer, int nbCoup, QString couleurJ1);
 
 
 
@@ -59,6 +67,7 @@ public slots:
 
 
     void afficherPlots();
+    void tempsDepasse();
 
 signals:
     void listePlotsChanged();
@@ -69,6 +78,8 @@ signals:
     void statutScanTermine();
     void batteryValueChanged(const QByteArray &batteryValue);
     void plotAllumeChanged(int idPlotAllume, QVariant colorVariant);
+    void plotAllumed(int tempsPourAppuyer);
+    void startNextIteration(Partie* partie, int tempsPourAppuyer, int nbCoup, QString couleur);
 
 
 

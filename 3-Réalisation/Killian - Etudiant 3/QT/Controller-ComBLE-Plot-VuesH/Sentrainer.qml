@@ -70,6 +70,18 @@ Item {
             isSelect: false
             color: "#D3D3D3"
             indexListe: index
+
+            MouseArea {
+                    anchors.fill: parent // Capturer les clics sur toute la zone de l'élément PlotSelectedVue
+
+                    onClicked: {
+
+                        console.log("Plot sélectionné:", nomPlot);
+                        // Exemple de modification de la couleur lors du clic
+                        color = "#D3D3D3"; // Changer la couleur du plot au rouge lors du clic
+                        controller.changerCouleurPlot(color , id);
+                    }
+                }
         }
     }
 
@@ -100,8 +112,10 @@ Item {
         }
 
         onClicked: {
-                  console.log("allumer plot aleatoire");
-                  controller.allumerPlotAleatoire();
+                  console.log("Lancement de la partie");
+                  //controller.allumerPlotAleatoire();
+
+                  controller.lancerPartieJ1();
               }
     }
 

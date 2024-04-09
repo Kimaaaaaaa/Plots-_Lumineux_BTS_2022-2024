@@ -79,6 +79,12 @@ void Controller::afficherPlots(){
     emit statutScanTermine();
 }
 
+void Controller::tempsDepasse()
+{
+    qDebug()<< "Temps depassé, coup suivant";
+    //éteindre tout les plots pendant 1 seconde
+}
+
 void Controller::addSelectedPlots(const int id)
 {
     qDebug() << "addSelectedPlots";
@@ -153,6 +159,8 @@ int Controller::getIndexByIdSelectedPlot(int id)
 
 
 
+
+
 int Controller::getLastPlotId()
 {
     return this->listePlots.last()->getId();
@@ -164,6 +172,11 @@ void Controller::addPlotTest()
     {
         listePlots.append(new Plot());
     }
+}
+
+const QList<Plot *> Controller::getListeSelectedPlot()
+{
+    return listePlotsSelected;
 }
 
 
@@ -206,8 +219,9 @@ void Controller::addPlot(const QBluetoothDeviceInfo &deviceInfo)
         connect(m_com, &ComBLE::batterieLue, this, [=](QLowEnergyService* service,const QByteArray &value) {
             qDebug()<< "hehe";
             if (service->serviceUuid() == QBluetoothUuid(QStringLiteral(SERVICE_UUID_BATTERIE))) {
-                qDebug()<< value.toInt();
+                qDebug()<< value << "!!";
                 int battery = value.toInt();
+                qDebug() << "Batterie = " << battery;
                 qDebug()<<listePlots.last();
 
                 this->listePlots.last()->setNvBatterie(battery);
@@ -248,22 +262,76 @@ void Controller::addPlot(const QBluetoothDeviceInfo &deviceInfo)
 
 }
 
-
-
-
-
-void Controller::couplerPlot(int index)
+void Controller::startTimer(int tempsPourAppuyer)
 {
-    // Vérifier si l'index est valide
-    if (index >= 0 && index < listePlots.count()) {
-        // Récupérer le plot correspondant à l'index
-        qDebug() << "l'id du plot est" << index;
-        Plot *plot = listePlots.at(index);
+    qDebug() << "Timer lancé de : " << tempsPourAppuyer << "s";
 
-        // Effectuer le couplage du plot
-        plot->activerPlot(plot,"1");
+    QTimer timer(this);
+    connect(&timer, &QTimer::timeout, this, &Controller::tempsDepasse);
+    qDebug() << "Temps : " << tempsPourAppuyer * 1000;
+    timer.start(tempsPourAppuyer * 1000); //Conversion en ms
+
+
+}
+
+void Controller::changerCouleurPlot(QString couleur, int id) {
+
+    const QList<Plot*> listePlot = getListeSelectedPlot();
+
+    // Maintenant vous pouvez parcourir listePlot et faire le traitement nécessaire
+    for (Plot* plot : listePlot) {
+        if (plot->getId() == id) {
+            plot->ecrireCouleurCharacteristic(couleur);
+            emit plotAllumeChanged(id, couleur);
+            break; // Sortir de la boucle après avoir trouvé le plot
+        }
     }
 }
+
+void Controller::lancerPartieJ1(int tempsPourAppuyer, int nbCoup, QString couleurJ1 )
+{
+    Partie* newPartie = new Partie(tempsPourAppuyer, nbCoup, couleurJ1); // Création d'une nouvelle partie
+
+    // Initialisation des variables
+
+
+    // Connexion du signal pour démarrer le premier tour
+    connect(this, &Controller::startNextIteration, this, &Controller::nextIteration);
+
+    // Émettre le signal pour démarrer le premier tour
+    emit startNextIteration(newPartie,tempsPourAppuyer, nbCoup, couleurJ1);
+}
+
+
+void Controller::nextIteration(Partie* partie, int tempsPourAppuyer, int nbCoup, QString couleurJ1)
+{
+    if (partie->getTourCourant() < nbCoup) {
+            // Sélectionner un plot aléatoire
+            if (!listePlotsSelected.isEmpty()) {
+                int randomIndex = QRandomGenerator::global()->bounded(0, listePlotsSelected.size());
+
+                // Modifier le plot sélectionné
+                listePlotsSelected.at(randomIndex)->ecrireCouleurCharacteristic(couleurJ1);
+                emit plotAllumeChanged(listePlotsSelected.at(randomIndex)->getId(), couleurJ1);
+
+                // Démarrer le timer pour ce plot
+                QTimer* timer = new QTimer(this);
+                connect(timer, &QTimer::timeout, this, &Controller::tempsDepasse);
+                timer->start(tempsPourAppuyer * 1000); // Conversion en millisecondes
+
+                // Augmenter le compteur d'itération
+                partie->setTourCourant(partie->getTourCourant()+1);
+            } else {
+                qDebug() << "La liste des plots sélectionnés est vide.";
+                return; // Arrêter si la liste est vide
+            }
+        } else {
+            qDebug() << "Nombre d'itérations terminé.";
+            return; // Fin de la partie
+        }
+}
+
+
 
 
 
