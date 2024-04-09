@@ -195,7 +195,7 @@ void Plot::ecrireCouleurCharacteristic(const QString &couleur)
     }
 
     QByteArray dataByteArray = couleur.toUtf8();
-
+    qDebug() << "Couleur envoyé : " << dataByteArray;
 
 
 

@@ -10,6 +10,7 @@ SOURCES += \
         comble.cpp \
         controller.cpp \
         main.cpp \
+        partie.cpp \
         plot.cpp
 
 RESOURCES += qml.qrc
@@ -28,4 +29,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     comble.h \
     controller.h \
+    partie.h \
     plot.h
