@@ -14,6 +14,24 @@ public:
     int getTourCourant() const;
     void setTourCourant(int newTourCourant);
 
+    bool getIsLaunched() const;
+    void setIsLaunched(bool newIsLaunched);
+
+    const QString &getCouleurJ1() const;
+    const QString &getCouleurJ2() const;
+    int getTempsPourAppuyer() const;
+    int getNbCoup() const;
+    const QList<Plot *> &getListePlotPartie() const;
+
+    int getPlotTouche() const;
+    void setPlotTouche(int newPlotTouche);
+
+    bool getIsColorRandom() const;
+    void setIsColorRandom(bool newIsColorRandom);
+
+    void setCouleurJ1(const QString &newCouleurJ1);
+    void setCouleurJ2(const QString &newCouleurJ2);
+
 private:
     QString couleurJ1; //par défaut 1
     QString couleurJ2;
@@ -21,7 +39,12 @@ private:
     int nbCoup;
     QList<Plot*> listePlotPartie;
     int tourCourant;
+    bool isLaunched;
+    bool isColorRandom;
+    int plotTouche;
+
 signals:
+    void isLaunchedChanged(bool);
 
 };
 

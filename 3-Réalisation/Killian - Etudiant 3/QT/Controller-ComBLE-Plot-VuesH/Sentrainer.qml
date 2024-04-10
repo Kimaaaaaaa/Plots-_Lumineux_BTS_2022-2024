@@ -79,7 +79,9 @@ Item {
                         console.log("Plot sélectionné:", nomPlot);
                         // Exemple de modification de la couleur lors du clic
                         color = "#D3D3D3"; // Changer la couleur du plot au rouge lors du clic
-                        controller.changerCouleurPlot(color , id);
+                        controller.plotTouche(idPlot);
+                        controller.eteindreToutLesPlots();
+
                     }
                 }
         }
@@ -115,8 +117,16 @@ Item {
                   console.log("Lancement de la partie");
                   //controller.allumerPlotAleatoire();
 
-                  controller.lancerPartieJ1();
+
+
+                  controller.lancerPartieJ1(2, 35, "random");
               }
+        Connections {
+                    target: controller
+                    onPartieLaunchedChanged: {
+                    btnLancerLaPartie.enabled = !isLaunched
+            }
+        }
     }
 
 }

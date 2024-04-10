@@ -58,9 +58,9 @@ public:
 public slots:
     void startScanning();
     void addPlot(const QBluetoothDeviceInfo &deviceInfo);
-    void startTimer(int tempsPourAppuyer);
-    void nextIteration(Partie* partie, int tempsPourAppuyer, int nbCoup, QString couleurJ1);
-
+    void startTimer();
+    void nextIteration();
+    void eteindreToutLesPlots();
 
 
 
@@ -69,6 +69,7 @@ public slots:
     void afficherPlots();
     void tempsDepasse();
 
+    void handlePartieLaunchedChanged(bool isLaunched);
 signals:
     void listePlotsChanged();
     void comChanged();
@@ -79,8 +80,10 @@ signals:
     void batteryValueChanged(const QByteArray &batteryValue);
     void plotAllumeChanged(int idPlotAllume, QVariant colorVariant);
     void plotAllumed(int tempsPourAppuyer);
-    void startNextIteration(Partie* partie, int tempsPourAppuyer, int nbCoup, QString couleur);
-
+    void startNextIteration();
+    void partieLaunchedChanged(bool);
+    void eteindreToutLesPlotsReady();
+    void plotTouche(int idPlot);
 
 
 
@@ -93,6 +96,9 @@ private:
     ComBLE * m_com;
     int m_selectedPlotsCount = 0;
     QLowEnergyController *controllerBLE;
+    QTimer* m_timer;
+    Partie* partie;
+    int indexCourant;
 
 
 };
