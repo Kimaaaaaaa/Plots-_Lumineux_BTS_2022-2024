@@ -32,6 +32,9 @@ public:
     void setCouleurJ1(const QString &newCouleurJ1);
     void setCouleurJ2(const QString &newCouleurJ2);
 
+    int getRandomIndex() const;
+    void setRandomIndex(int newRandomIndex);
+
 private:
     QString couleurJ1; //par défaut 1
     QString couleurJ2;
@@ -42,6 +45,7 @@ private:
     bool isLaunched;
     bool isColorRandom;
     int plotTouche;
+    int randomIndex;
 
 signals:
     void isLaunchedChanged(bool);

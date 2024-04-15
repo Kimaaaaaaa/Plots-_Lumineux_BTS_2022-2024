@@ -35,6 +35,7 @@ public:
     Q_INVOKABLE void changerCouleurPlot(QString couleur, int id);
     Q_INVOKABLE void lancerPartieJ1(int tempsPourAppuyer = 5, int nbCoup = 10, QString couleurJ1 = "red");
 
+
     //Q_INVOKABLE int lancerPartie(int temps);
     QQmlListProperty<Plot> getListePlots();
     QQmlListProperty<Plot> getListePlotsSelected();
@@ -44,6 +45,9 @@ public:
     void addPlotTest();
     void writeDataToDevice(QLowEnergyService *service, const QLowEnergyCharacteristic &characteristic, const QByteArray &data);
     const QList<Plot*> getListeSelectedPlot();
+    bool getIsLaunched(bool);
+
+
     /*QLowEnergyController* getControllerBLE();
     void setControllerBLE(QLowEnergyController * controllerBLE);
     */
@@ -58,9 +62,10 @@ public:
 public slots:
     void startScanning();
     void addPlot(const QBluetoothDeviceInfo &deviceInfo);
-    void startTimer();
+    //void startTimer();
     void nextIteration();
     void eteindreToutLesPlots();
+    void handlePlotTouche(int idPlot);
 
 
 
@@ -99,6 +104,7 @@ private:
     QTimer* m_timer;
     Partie* partie;
     int indexCourant;
+    QMetaObject::Connection m_timerConnection;
 
 
 };

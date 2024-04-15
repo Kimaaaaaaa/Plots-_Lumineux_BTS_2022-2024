@@ -53,6 +53,9 @@ public:
      void ecrireCouleurCharacteristic(const QString &couleur);
 
 
+     bool getAllume() const;
+     void setAllume(bool newAllume);
+
 signals:
     void tempsRecu(Plot*);
     void nomChanged();
@@ -79,9 +82,11 @@ private:
     short int nvBatterie;
     QString m_nom;
     bool selected;
+    bool allume;
     QLowEnergyController* controllerBle;
     static int s_nextId;
     int m_id;
+
 
 };
 

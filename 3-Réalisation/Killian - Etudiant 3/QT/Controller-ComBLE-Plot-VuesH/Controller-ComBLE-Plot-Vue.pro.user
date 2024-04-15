@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.15.1, 2024-04-10T11:44:53. -->
+<!-- Written by QtCreator 4.15.1, 2024-04-15T11:33:09. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -572,7 +572,6 @@
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">0</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">Controller-ComBLE-Plot-Vue</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.AndroidRunConfiguration:C:/Users/houardk/Desktop/Controller-ComBLE-Plot-VuesH/Controller-ComBLE-Plot-Vue.pro</value>
     <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">C:/Users/houardk/Desktop/Controller-ComBLE-Plot-VuesH/Controller-ComBLE-Plot-Vue.pro</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>

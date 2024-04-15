@@ -36,6 +36,7 @@ Plot::Plot()
     this->couleur = nullptr;
     nvBatterie = 0;
     selected = false;
+    allume = false;
 
 }
 
@@ -127,6 +128,16 @@ void Plot::standBy()
 void Plot::writeTimeout()
 {
     qWarning() << "Write operation timed out.";
+}
+
+bool Plot::getAllume() const
+{
+    return allume;
+}
+
+void Plot::setAllume(bool newAllume)
+{
+    allume = newAllume;
 }
 
 

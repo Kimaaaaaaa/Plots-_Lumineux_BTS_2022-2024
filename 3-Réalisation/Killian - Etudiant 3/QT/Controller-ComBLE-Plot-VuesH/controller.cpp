@@ -179,6 +179,11 @@ const QList<Plot *> Controller::getListeSelectedPlot()
     return listePlotsSelected;
 }
 
+bool Controller::getIsLaunched(bool)
+{
+    return partie->getIsLaunched();
+}
+
 
 
 void Controller::addPlot(const QBluetoothDeviceInfo &deviceInfo)
@@ -262,6 +267,7 @@ void Controller::addPlot(const QBluetoothDeviceInfo &deviceInfo)
 
 }
 
+/*
 void Controller::startTimer()
 {
     qDebug() << "Timer lancé de : " << partie->getTempsPourAppuyer() << "s";
@@ -274,7 +280,7 @@ void Controller::startTimer()
     timer.start(partie->getTempsPourAppuyer() * 1000); //Conversion en ms
 
 
-}
+}*/
 void Controller::tempsDepasse()
 {
     qDebug() << "Temps dépassé, coup suivant";
@@ -282,11 +288,10 @@ void Controller::tempsDepasse()
     // Connecter le signal eteindreToutLesPlotsReady à une lambda
     connect(this, &Controller::eteindreToutLesPlotsReady, this, [this]() {
         qDebug() << "emission du signal eteindre tout les plots";
-        eteindreToutLesPlots(); // Appel de la méthode eteindreToutLesPlots() lorsque le signal est émis
+        eteindreToutLesPlots();// Appel de la méthode eteindreToutLesPlots() lorsque le signal est émis
     });
 
-    emit eteindreToutLesPlotsReady();
-
+     emit eteindreToutLesPlotsReady();
 }
 
 void Controller::changerCouleurPlot(QString couleur, int id) {
@@ -305,60 +310,30 @@ void Controller::changerCouleurPlot(QString couleur, int id) {
 
 void Controller::lancerPartieJ1(int tempsPourAppuyer, int nbCoup, QString couleurJ1 )
 {
+
+
+    //éteindre tout les plots.
     for(Plot* plot : listePlotsSelected)
     {
         plot->ecrireCouleurCharacteristic("eteint");
         emit plotAllumeChanged(plot->getId(), "#D3D3D3");
 
     }
-
-
-
-
-
-
+    //Instanciation d'une nouvelle partie
 
     partie = new Partie(tempsPourAppuyer, nbCoup, couleurJ1); // Création d'une nouvelle partie
 
     partie->setIsLaunched(true);
 
-    // Initialisation des variables
-
-
 
     //configuration des connections
-    //temps de 5 s
+    //le joueur n'appuie pas
     connect(m_timer, &QTimer::timeout, this, [this]() {
         qDebug()<<"tempsDepasse";
         tempsDepasse();  // Appeler tempsDepasse() avec l'objet partie capturé
     });
-    m_timer->setSingleShot(true);
+    m_timer->setSingleShot(false);
 
-    /*connect(m_com, &ComBLE::plotTouche, this, [this]() {
-        qDebug()<<"tempsDepasse";
-        tempsDepasse();  // Appeler tempsDepasse() avec l'objet partie capturé
-    });*/
-
-    connect(this, &Controller::plotTouche, this, [this](int idPlot) {
-        Plot* plotCourant;
-
-        for(Plot *plot : listePlotsSelected)
-        {
-            if(plot->getId() == idPlot)
-            {
-                plotCourant =  plot;
-            }
-            else{
-                qDebug("Erreur, mauvais plot a été touché");
-            }
-        }
-
-
-        if(idPlot == plotCourant->getId() )
-        {
-            partie->setPlotTouche(partie->getPlotTouche() + 1);
-        }
-    });
 
 
     // Connexion du signal pour démarrer le premier tour
@@ -371,6 +346,8 @@ void Controller::lancerPartieJ1(int tempsPourAppuyer, int nbCoup, QString couleu
 
 void Controller::nextIteration()
 {
+
+    qDebug("NEXT ITERATION");
     // Augmenter le compteur d'itération
     partie->setTourCourant(partie->getTourCourant()+1);
 
@@ -400,58 +377,100 @@ void Controller::nextIteration()
 
 
 
-        if (partie->getTourCourant() < partie->getNbCoup()) {
-            // Sélectionner un plot aléatoire
-            if (!listePlotsSelected.isEmpty()) {
-                indexCourant = QRandomGenerator::global()->bounded(0, listePlotsSelected.size());
-
-                // Modifier le plot sélectionné
-                listePlotsSelected.at(indexCourant)->ecrireCouleurCharacteristic(partie->getCouleurJ1());
-                emit plotAllumeChanged(listePlotsSelected.at(indexCourant)->getId(), partie->getCouleurJ1());
-
-                // Démarrer le timer pour ce plot
-
-                m_timer->start(partie->getTempsPourAppuyer() * 1000); // Conversion en millisecondes
+    if (partie->getTourCourant() < partie->getNbCoup()) {
+        // Sélectionner un plot aléatoire
+        if (!listePlotsSelected.isEmpty()) {
+            indexCourant = QRandomGenerator::global()->bounded(0, listePlotsSelected.size());
+            partie->setRandomIndex(indexCourant);
 
 
+            // Allumer le plot sélectionné
+            listePlotsSelected.at(indexCourant)->ecrireCouleurCharacteristic(partie->getCouleurJ1());
+            emit plotAllumeChanged(listePlotsSelected.at(indexCourant)->getId(), partie->getCouleurJ1());
+            listePlotsSelected.at(indexCourant)->setAllume(true);
 
-                qDebug() << "Tour courant : " << partie->getTourCourant();
-            } else {
-                qDebug() << "La liste des plots sélectionnés est vide.";
-                return; // Arrêter si la liste est vide
+
+
+
+
+            // Démarrer le timer pour ce plot
+
+            //connecter timer et appui
+
+            m_timer->start(partie->getTempsPourAppuyer() * 1000); // Conversion en millisecondes //connect tempsPourAppuyer
+            if (!m_timerConnection) {
+                m_timerConnection = connect(this, &Controller::plotTouche, this, &Controller::handlePlotTouche);
             }
+                   //connect appui
+
+
+
+
+
+            qDebug() << "Tour courant : " << partie->getTourCourant();
+
+
         } else {
-            qDebug() << "Nombre d'itérations terminé.";
-            partie->setIsLaunched(false);
-
-            return; // Fin de la partie
+            qDebug() << "La liste des plots sélectionnés est vide.";
+            return; // Arrêter si la liste est vide
         }
+    } else {
+        qDebug() << "Nombre d'itérations terminé.";
+        partie->setIsLaunched(false);
 
-
+        return; // Fin de la partie
     }
 
-    void Controller::eteindreToutLesPlots()
+
+}
+
+void Controller::eteindreToutLesPlots()
+{
+    QList<Plot*> listeDePlot = getListeSelectedPlot();
+
+    for(Plot * plot:listePlotsSelected)
     {
-        QList<Plot*> listeDePlot = getListeSelectedPlot();
+        plot->setAllume(false);
+        plot->ecrireCouleurCharacteristic("eteint");
+        emit plotAllumeChanged(plot->getId(), "#D3D3D3");
+    }
 
-        for(Plot * plot:listePlotsSelected)
-        {
-            plot->ecrireCouleurCharacteristic("eteint");
-            emit plotAllumeChanged(plot->getId(), "#D3D3D3");
-        }
+    qDebug("Debut des deux secondes d'attentes");
+    QTimer::singleShot(2000, [this]() {
+        // Ce code est exécuté après un délai de 2 secondes
+        qDebug("fin des deux secondes d'attentes");
+        emit startNextIteration();
+    });
 
-        qDebug("Debut des deux secondes d'attentes");
-        QTimer::singleShot(2000, [this]() {
-            // Ce code est exécuté après un délai de 2 secondes
-            qDebug("fin des deux secondes d'attentes");
-            emit startNextIteration();
-        });
+
+
+}
+
+void Controller::handlePlotTouche(int idPlot)
+{
+    disconnect(m_timerConnection);
+
+
+    disconnect(this, &Controller::plotTouche, this, &Controller::handlePlotTouche);
+
+
+
+    if(idPlot == listePlotsSelected.at(partie->getRandomIndex())->getId())
+    {
+        qDebug() << "bon plot touché";
+        partie->setPlotTouche(partie->getPlotTouche() +1);
 
     }
 
-    void Controller::handlePartieLaunchedChanged(bool isLaunched) {
-        emit partieLaunchedChanged(isLaunched);
-    }
+    qDebug() << "papapapapa";
+    //débuter la tempo entre deux alumages
+    eteindreToutLesPlots();
+}
+
+void Controller::handlePartieLaunchedChanged(bool isLaunched) {
+
+    emit partieLaunchedChanged(isLaunched);
+}
 
 
 

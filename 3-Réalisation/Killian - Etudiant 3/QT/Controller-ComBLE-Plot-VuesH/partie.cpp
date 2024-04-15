@@ -88,3 +88,13 @@ void Partie::setCouleurJ2(const QString &newCouleurJ2)
 {
     couleurJ2 = newCouleurJ2;
 }
+
+int Partie::getRandomIndex() const
+{
+    return randomIndex;
+}
+
+void Partie::setRandomIndex(int newRandomIndex)
+{
+    randomIndex = newRandomIndex;
+}

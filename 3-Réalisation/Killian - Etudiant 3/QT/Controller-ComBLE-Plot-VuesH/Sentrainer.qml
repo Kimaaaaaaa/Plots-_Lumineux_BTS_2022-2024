@@ -54,7 +54,7 @@ Item {
         anchors.fill: parent
         cellHeight: cellWidth
         cellWidth: parent.width/2
-        interactive: false
+        interactive: true
         // orientation: ListView.Horizontal
         anchors.topMargin: 100
         anchors.left: parent.left
@@ -119,7 +119,7 @@ Item {
 
 
 
-                  controller.lancerPartieJ1(2, 35, "random");
+                  controller.lancerPartieJ1(10, 35, "random");
               }
         Connections {
                     target: controller
