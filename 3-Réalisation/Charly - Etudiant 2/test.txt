@@ -1,0 +1,38 @@
+#define SERVICE_UUID_1 "0000180F-0000-1000-8000-00805F9B34FB"
+#define CHARACTERISTIC_UUID_TX  "0000180F-0000-1000-8000-00805F9B34FB"
+
+dans le main :
+
+BLECharacteristic *pCharacteristic;
+int txValue = 0;
+
+  //Create a BLE Characteristic
+  pCharacteristic = pService->createCharacteristic(
+                      CHARACTERISTIC_UUID_TX,
+                      BLECharacteristic::PROPERTY_READ
+                    );
+ //BLE2902 needed to notify
+  pCharacteristic->addDescriptor(new BLE2902());
+
+dans loop :
+
+ if (deviceConnected) {
+      txValue = 50;
+
+      //converison of tx Value
+      String txString;
+      txString = String(txValue);
+      // Setting the value to the characteristic
+      pCharacteristic->setValue((uint8_t*)txString.c_str(), txString.length());
+
+      String serviceUUIDString = String(SERVICE_UUID_1);
+      serviceUUIDString.toLowerCase();
+      String characteristicUUIDString = String(CHARACTERISTIC_UUID_TX);
+      
+      characteristicUUIDString.toLowerCase();
+
+      // Notifying the connected client
+      pCharacteristic->notify();
+      Serial.println("Sent value: " + String(txString));
+      delay(500);
+    }
