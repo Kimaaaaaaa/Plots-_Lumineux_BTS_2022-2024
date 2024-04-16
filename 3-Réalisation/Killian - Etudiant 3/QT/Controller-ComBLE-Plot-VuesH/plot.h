@@ -51,7 +51,8 @@ public:
     //void allumerPlot(QString couleur);
 
      void ecrireCouleurCharacteristic(const QString &couleur);
-
+     void lireTempsDeReaction();
+     QList<unsigned long> getListeTempsDeReaction() const;
 
      bool getAllume() const;
      void setAllume(bool newAllume);
@@ -63,6 +64,7 @@ signals:
     void selectedChanged();
     void idChanged();
     void selectedPlotsChanged(const int id);
+    void tempsDeReactionReceived(unsigned long);
 
 
 
@@ -70,6 +72,7 @@ signals:
 public slots:
     void standBy();
     void writeTimeout();
+    void characteristicRead(const QLowEnergyCharacteristic &characteristic, const QByteArray &value);
 
 
 
@@ -84,8 +87,12 @@ private:
     bool selected;
     bool allume;
     QLowEnergyController* controllerBle;
+    QLowEnergyService *servicePlot;
     static int s_nextId;
     int m_id;
+    QLowEnergyCharacteristic m_characteristicTempsDeReaction;
+    QList<unsigned long> m_listeTempsDeReaction;
+
 
 
 };

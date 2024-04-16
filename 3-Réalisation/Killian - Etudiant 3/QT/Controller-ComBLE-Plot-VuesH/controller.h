@@ -66,6 +66,7 @@ public slots:
     //void startTimer();
     void nextIteration();
     void eteindreToutLesPlots();
+    void plotToucheHandler(int idPlot);
 
 
 
@@ -88,6 +89,7 @@ signals:
     void plotAllumed(int tempsPourAppuyer);
     void startNextIteration();
     void partieLaunchedChanged(bool);
+    void plotTouche(int idPlot);
 
 
 

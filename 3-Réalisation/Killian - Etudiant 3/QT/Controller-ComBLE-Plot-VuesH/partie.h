@@ -47,6 +47,9 @@ private:
     int plotTouche;
     int randomIndex;
 
+    QList<unsigned long> listeTempsDeReactionJ1;
+    QList<unsigned long> listeTempsDeReactionJ2;
+
 signals:
     void isLaunchedChanged(bool);
 
