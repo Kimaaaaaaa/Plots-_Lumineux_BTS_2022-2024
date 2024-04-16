@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>qtquickcontrols2.conf</file>
+        <file>sEntrainer.qml</file>
+        <file>afficherLesResultats.qml</file>
+        <file>BlocBouton.qml</file>
+        <file>inscription.qml</file>
+        <file>dataJoueurs.qml</file>
+        <file>accueilApplication.qml</file>
+        <file>configurationDePartie.qml</file>
+        <file>connexion.qml</file>
+        <file>connexionInscription.qml</file>
+        <file>afficherUnePartie.qml</file>
+        <file>afficherLesStatistiques.qml</file>
+        <file>afficherMoyenne.qml</file>
+    </qresource>
+</RCC>
