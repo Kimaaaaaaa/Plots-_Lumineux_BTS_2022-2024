@@ -119,7 +119,7 @@ Item {
 
 
 
-                  controller.lancerPartieJ1(10, 35, "random");
+                  controller.lancerPartieJ1(5, 35, "random");
               }
         Connections {
                     target: controller

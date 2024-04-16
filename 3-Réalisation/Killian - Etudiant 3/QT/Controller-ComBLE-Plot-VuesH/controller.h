@@ -46,6 +46,7 @@ public:
     void writeDataToDevice(QLowEnergyService *service, const QLowEnergyCharacteristic &characteristic, const QByteArray &data);
     const QList<Plot*> getListeSelectedPlot();
     bool getIsLaunched(bool);
+    void tempsDepasse();
 
 
     /*QLowEnergyController* getControllerBLE();
@@ -65,14 +66,14 @@ public slots:
     //void startTimer();
     void nextIteration();
     void eteindreToutLesPlots();
-    void handlePlotTouche(int idPlot);
+
 
 
 
 
 
     void afficherPlots();
-    void tempsDepasse();
+
 
     void handlePartieLaunchedChanged(bool isLaunched);
 signals:
@@ -87,8 +88,7 @@ signals:
     void plotAllumed(int tempsPourAppuyer);
     void startNextIteration();
     void partieLaunchedChanged(bool);
-    void eteindreToutLesPlotsReady();
-    void plotTouche(int idPlot);
+
 
 
 

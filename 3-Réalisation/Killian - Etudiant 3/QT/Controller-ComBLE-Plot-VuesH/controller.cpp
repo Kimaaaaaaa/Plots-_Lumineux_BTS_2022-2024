@@ -184,8 +184,6 @@ bool Controller::getIsLaunched(bool)
     return partie->getIsLaunched();
 }
 
-
-
 void Controller::addPlot(const QBluetoothDeviceInfo &deviceInfo)
 {
 
@@ -267,32 +265,7 @@ void Controller::addPlot(const QBluetoothDeviceInfo &deviceInfo)
 
 }
 
-/*
-void Controller::startTimer()
-{
-    qDebug() << "Timer lancé de : " << partie->getTempsPourAppuyer() << "s";
 
-    QTimer timer(this);
-    connect(&timer, &QTimer::timeout, this, [this]() {
-        tempsDepasse();
-    });
-    qDebug() << "Temps : " << partie->getTempsPourAppuyer() * 1000;
-    timer.start(partie->getTempsPourAppuyer() * 1000); //Conversion en ms
-
-
-}*/
-void Controller::tempsDepasse()
-{
-    qDebug() << "Temps dépassé, coup suivant";
-
-    // Connecter le signal eteindreToutLesPlotsReady à une lambda
-    connect(this, &Controller::eteindreToutLesPlotsReady, this, [this]() {
-        qDebug() << "emission du signal eteindre tout les plots";
-        eteindreToutLesPlots();// Appel de la méthode eteindreToutLesPlots() lorsque le signal est émis
-    });
-
-     emit eteindreToutLesPlotsReady();
-}
 
 void Controller::changerCouleurPlot(QString couleur, int id) {
 
@@ -324,15 +297,6 @@ void Controller::lancerPartieJ1(int tempsPourAppuyer, int nbCoup, QString couleu
     partie = new Partie(tempsPourAppuyer, nbCoup, couleurJ1); // Création d'une nouvelle partie
 
     partie->setIsLaunched(true);
-
-
-    //configuration des connections
-    //le joueur n'appuie pas
-    connect(m_timer, &QTimer::timeout, this, [this]() {
-        qDebug()<<"tempsDepasse";
-        tempsDepasse();  // Appeler tempsDepasse() avec l'objet partie capturé
-    });
-    m_timer->setSingleShot(false);
 
 
 
@@ -393,15 +357,17 @@ void Controller::nextIteration()
 
 
 
-            // Démarrer le timer pour ce plot
+
 
             //connecter timer et appui
 
-            m_timer->start(partie->getTempsPourAppuyer() * 1000); // Conversion en millisecondes //connect tempsPourAppuyer
-            if (!m_timerConnection) {
-                m_timerConnection = connect(this, &Controller::plotTouche, this, &Controller::handlePlotTouche);
-            }
+            connect(m_timer, &QTimer::timeout, this, &Controller::eteindreToutLesPlots );
                    //connect appui
+
+
+            // Démarrer le timer pour ce plot
+            m_timer->setSingleShot(true);
+            m_timer->start(partie->getTempsPourAppuyer() * 1000);
 
 
 
@@ -426,6 +392,7 @@ void Controller::nextIteration()
 
 void Controller::eteindreToutLesPlots()
 {
+    disconnect(m_timer, &QTimer::timeout, this, &Controller::eteindreToutLesPlots );
     QList<Plot*> listeDePlot = getListeSelectedPlot();
 
     for(Plot * plot:listePlotsSelected)
@@ -446,26 +413,7 @@ void Controller::eteindreToutLesPlots()
 
 }
 
-void Controller::handlePlotTouche(int idPlot)
-{
-    disconnect(m_timerConnection);
 
-
-    disconnect(this, &Controller::plotTouche, this, &Controller::handlePlotTouche);
-
-
-
-    if(idPlot == listePlotsSelected.at(partie->getRandomIndex())->getId())
-    {
-        qDebug() << "bon plot touché";
-        partie->setPlotTouche(partie->getPlotTouche() +1);
-
-    }
-
-    qDebug() << "papapapapa";
-    //débuter la tempo entre deux alumages
-    eteindreToutLesPlots();
-}
 
 void Controller::handlePartieLaunchedChanged(bool isLaunched) {
 

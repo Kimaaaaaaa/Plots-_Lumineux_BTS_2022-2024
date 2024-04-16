@@ -8,6 +8,8 @@ Item {
     property bool selectedPlot
     property bool isSelect : true
 
+
+
     width: parent.width // Définir la largeur de l'élément sur la largeur de la liste
     height: 60 // Hauteur de l'élément
     Rectangle {
