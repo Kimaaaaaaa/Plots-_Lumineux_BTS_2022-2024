@@ -7,10 +7,7 @@
 #define SERVICE_BATTERY_UUID "00002A19-0000-1000-8000-00805F9B34FB"
 #define CHARACTERISTIC_BATTERY_UUID_TX  "0000180F-0000-1000-8000-00805F9B34FB"
 #define SERVICE_PLOT_UUID "4fafc202-1fb5-459e-8fcc-c5c9c331914b"
-#define UUID_Characteristic_Couleur "8cd233ac-a2ca-450e-a7a2-d114bd53e2a3"
-#define UUID_CHARACTERISTIC_TEMPSPOURAPPUYER  "8cd233ac-a2ca-450e-a7a2-b1214ae851cc"
-#define UUID_CHARACTERISTIC_ID "8cd233ac-a2ca-450e-a7a2-ea07361b26a8"
-#define UUID_CHARACTERISTIC_TEMPSDEREACTION "8cd233ac-a2ca-450e-a7a2-ea07361b26aa"
+#define UUID_Characteristic_Couleur "beb5483e-36e1-4688-b7f5-ea07361b26ab"
 
 Controller::Controller()
 {
@@ -25,15 +22,7 @@ Controller::Controller()
 
 
 
-
-
-
-
-
-
-
-
-
+    connect(m_com, &ComBLE::valeurLue, this, &Controller::recupererTempsDeReaction);
 
 
 }
@@ -187,6 +176,31 @@ bool Controller::getIsLaunched(bool)
     return partie->getIsLaunched();
 }
 
+void Controller::recupererTempsDeReaction(QLowEnergyService* service, QByteArray data)
+{
+    if (service->serviceUuid() == QBluetoothUuid(QStringLiteral(SERVICE_PLOT_UUID)))
+    {
+        qDebug() << "Service plot détecté";
+
+
+        if (data.size() >= sizeof(unsigned long))
+        {
+            unsigned long tempsDeReaction = *reinterpret_cast<const unsigned long*>(data.constData());
+
+
+            partie->addListeDeTempsDeReactionJ1(tempsDeReaction);
+        }
+        else
+        {
+            qWarning() << "Données de temps de réaction incomplètes";
+        }
+    }
+    else
+    {
+        qWarning() << "Service non pris en charge ou UUID incorrect";
+    }
+}
+
 void Controller::addPlot(const QBluetoothDeviceInfo &deviceInfo)
 {
 
@@ -333,10 +347,10 @@ void Controller::nextIteration()
         listeDeCouleur.append("blue");
         listeDeCouleur.append("green");
 
-
+        // Generate a random index
         int randomIndex = rand() % listeDeCouleur.size();
 
-
+        // Retrieve a random color from the list
         partie->setCouleurJ1(listeDeCouleur.at(randomIndex));
     }
 
@@ -350,7 +364,7 @@ void Controller::nextIteration()
             indexCourant = QRandomGenerator::global()->bounded(0, listePlotsSelected.size());
             partie->setRandomIndex(indexCourant);
 
-            listePlotsSelected.at(indexCourant)->lireTempsDeReaction();
+
             // Allumer le plot sélectionné
             listePlotsSelected.at(indexCourant)->ecrireCouleurCharacteristic(partie->getCouleurJ1());
             emit plotAllumeChanged(listePlotsSelected.at(indexCourant)->getId(), partie->getCouleurJ1());
@@ -365,7 +379,6 @@ void Controller::nextIteration()
             //connecter timer et appui
 
             connect(m_timer, &QTimer::timeout, this, &Controller::eteindreToutLesPlots );
-            connect(this, &Controller::plotTouche, this, &Controller::eteindreToutLesPlots);
                    //connect appui
 
 
@@ -387,7 +400,14 @@ void Controller::nextIteration()
     } else {
         qDebug() << "Nombre d'itérations terminé.";
         partie->setIsLaunched(false);
+        for(Plot * plot:listePlotsSelected)
+        {
+
+            delete plot;
+        }
+
         delete partie;
+
         return; // Fin de la partie
     }
 
@@ -397,8 +417,6 @@ void Controller::nextIteration()
 void Controller::eteindreToutLesPlots()
 {
     disconnect(m_timer, &QTimer::timeout, this, &Controller::eteindreToutLesPlots );
-    disconnect(this, &Controller::plotTouche, this, &Controller::eteindreToutLesPlots);
-
     QList<Plot*> listeDePlot = getListeSelectedPlot();
 
     for(Plot * plot:listePlotsSelected)
@@ -417,29 +435,6 @@ void Controller::eteindreToutLesPlots()
 
 
 
-}
-
-void Controller::plotToucheHandler(int idPlot)
-{
-    disconnect(m_timer, &QTimer::timeout, this, &Controller::eteindreToutLesPlots );
-    disconnect(this, &Controller::plotTouche, this, &Controller::plotToucheHandler);
-    qDebug() << "Id plot : " << idPlot;
-    int indexCourant = partie->getRandomIndex();
-
-    if(listePlotsSelected.at(indexCourant)->getId() == idPlot)
-    {
-        qDebug() << "Le bon plot a été touché";
-        //lire la valeur, cela doit être possible à partir d'une instance de plot (présente dans listePlotsSelected
-        listePlotsSelected.at(indexCourant)->lireTempsDeReaction();
-
-        qDebug() << "liste :" << listePlotsSelected.at(indexCourant)->getListeTempsDeReaction();
-
-
-        partie->setPlotTouche(partie->getPlotTouche()+1);
-    }
-
-
-    eteindreToutLesPlots();
 }
 
 

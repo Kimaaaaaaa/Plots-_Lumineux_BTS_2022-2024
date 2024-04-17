@@ -49,6 +49,7 @@ public:
     void tempsDepasse();
 
 
+
     /*QLowEnergyController* getControllerBLE();
     void setControllerBLE(QLowEnergyController * controllerBLE);
     */
@@ -66,8 +67,7 @@ public slots:
     //void startTimer();
     void nextIteration();
     void eteindreToutLesPlots();
-    void plotToucheHandler(int idPlot);
-
+    void recupererTempsDeReaction(QLowEnergyService* service, QByteArray data);
 
 
 
@@ -89,7 +89,7 @@ signals:
     void plotAllumed(int tempsPourAppuyer);
     void startNextIteration();
     void partieLaunchedChanged(bool);
-    void plotTouche(int idPlot);
+    void tempsDeReactionReady(QByteArray data);
 
 
 

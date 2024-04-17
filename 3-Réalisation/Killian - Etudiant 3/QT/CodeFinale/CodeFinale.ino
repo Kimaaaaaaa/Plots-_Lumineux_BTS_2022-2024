@@ -21,6 +21,7 @@ int txValue = 0;
 #define NUMPIXELS 12
 
 
+
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN_LED, NEO_GRB + NEO_KHZ800);
 
 BLECharacteristic *pCharacteristicBattery;
@@ -28,6 +29,8 @@ BLECharacteristic *pCharacteristicColor;
 BLECharacteristic *pCharacteristicID;
 BLECharacteristic *pCharacteristicTempsDeReaction;
 BLECharacteristic *pCharacteristicTempsPourAppuyer;
+
+int couleur = -1;
 
 
 
@@ -43,67 +46,67 @@ class MyServerCallbacks : public BLEServerCallbacks {
       Heltec.display->drawString(0, 20, "Couleur :" + String(pCharacteristicColor->getValue().c_str()));
       Heltec.display->drawString(0, 30, "TempsDeReaction :" + String(pCharacteristicTempsDeReaction->getValue().c_str()));
       Heltec.display->display();
-    };
-};
-class MyCharacteristicColorCallbacks : public BLECharacteristicCallbacks {
-    void onWrite(BLECharacteristic *pCharacteristic) {
-      std::string receivedData = pCharacteristic->getValue();
-      const char *data = receivedData.c_str();
-
-      Heltec.display->clear();
-      Heltec.display->drawString(0, 20, "Couleur : " + String(receivedData.c_str()));
-      Heltec.display->display();
-
-      int couleur = -1; // Initialisez à une valeur par défaut pour détecter les cas non gérés
-
-      if (strcmp(data, "white") == 0) {
-        couleur = 0;
-      } else if (strcmp(data, "red") == 0) {
-        couleur = 1;
-      } else if (strcmp(data, "green") == 0) {
-        couleur = 2;
-      } else if (strcmp(data, "blue") == 0) {
-        couleur = 3;
-      } else if (strcmp(data, "yellow") == 0) {
-        couleur = 4;
-      } else {
-        couleur = 5;
-      }
-
-
-
-
-      if (couleur != -1) {
-        pixels.begin();
-        pixels.clear();
-        pixels.setBrightness(50);
-
-        switch (couleur) {
-          case 0:
-            pixels.fill(pixels.Color(255, 255, 255)); // White
-            break;
-          case 1:
-            pixels.fill(pixels.Color(255, 0, 0)); // Red
-            break;
-          case 2:
-            pixels.fill(pixels.Color(0, 255, 0)); // Green
-            break;
-          case 3:
-            pixels.fill(pixels.Color(0, 0, 255)); // Blue
-            break;
-          case 4:
-            pixels.fill(pixels.Color(255, 255, 0)); // Yellow
-            break;
-          default:
-            pixels.clear();
-            break;
-        }
-
-        pixels.show();
-      }
     }
 };
+class MyCharacteristicColorCallbacks : public BLECharacteristicCallbacks {
+public:
+    void onWrite(BLECharacteristic *pCharacteristic) override {
+        std::string receivedData = pCharacteristic->getValue();
+        const char *data = receivedData.c_str();
 
+        Heltec.display->clear();
+        Heltec.display->drawString(0, 20, "Couleur : " + String(receivedData.c_str()));
+        Heltec.display->display();
+
+        
+
+        if (strcmp(data, "white") == 0) {
+            couleur = 0;
+        } else if (strcmp(data, "red") == 0) {
+            couleur = 1;
+        } else if (strcmp(data, "green") == 0) {
+            couleur = 2;
+        } else if (strcmp(data, "blue") == 0) {
+            couleur = 3;
+        } else if (strcmp(data, "yellow") == 0) {
+            couleur = 4;
+        } else {
+            couleur = 5;
+        }
+
+        if (couleur != -1) {
+            pixels.begin();
+            pixels.clear();
+            pixels.setBrightness(50);
+
+            switch (couleur) {
+                case 0:
+                    pixels.fill(pixels.Color(255, 255, 255)); // White
+                    break;
+                case 1:
+                    pixels.fill(pixels.Color(255, 0, 0)); // Red
+                    break;
+                case 2:
+                    pixels.fill(pixels.Color(0, 255, 0)); // Green
+                    break;
+                case 3:
+                    pixels.fill(pixels.Color(0, 0, 255)); // Blue
+                    break;
+                case 4:
+                    pixels.fill(pixels.Color(255, 255, 0)); // Yellow
+                    break;
+                default:
+                    pixels.clear();
+                    break;
+            }
+
+            pixels.show();
+
+            couleur = 10;
+         
+           }
+        }
+};
 
 
 
@@ -134,7 +137,7 @@ class MyCharacteristicTempsDeReactionCallbacks : public BLECharacteristicCallbac
 
 void setup() {
 
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   // Configuration de l'écran
   Heltec.begin(true /*DisplayEnable Enable*/, false /*LoRa Disable*/, true /*Serial Enable*/);
@@ -192,23 +195,37 @@ void setup() {
   Serial.println("Waiting for a client connection to notify...");
 }
 
-
-
 void loop() {
-  static unsigned long tempsDebutProgramme = 0;
-  tempsDebutProgramme = millis();
+    static int lastSensorState = HIGH;  // État précédent du capteur
 
-  int valeurCapteur = digitalRead(BROCHE_CAPTEUR);
-    unsigned long tempsActuel = millis();
+    if (couleur != -1 && (couleur >= 1 && couleur <= 5)) {
+        // Si la couleur est valide et correspond à une action attendue
 
-    if (valeurCapteur == LOW) {
-      unsigned long tempsDetection = tempsActuel - tempsDebutProgramme;
-      Serial.print("Détection infrarouge détectée après ");
-      Serial.print(tempsDetection);
-      Serial.println(" millisecondes.");
-      // Mettre le temps de réaction dans la caractéristique
-      pCharacteristicTempsDeReaction->setValue((uint8_t*)&tempsDetection, sizeof(tempsDetection));
-      pCharacteristicTempsDeReaction->notify();
-    } 
-  
+        int currentSensorState = digitalRead(BROCHE_CAPTEUR);
+
+        // Détecter le changement d'état du capteur (de HIGH à LOW)
+        if (currentSensorState == HIGH && lastSensorState == HIGH) {
+            unsigned long tempsDebutProgramme = millis();
+            Serial.println("Début de la capture du temps");
+
+            // Attendre que le capteur repasse à l'état HIGH (relâchement de l'appui)
+            while (digitalRead(BROCHE_CAPTEUR) == LOW) {
+                delay(10);  // Attente courte pour éviter une boucle trop rapide
+            }
+
+            // Calculer le temps d'attente
+            unsigned long tempsAttente = millis() - tempsDebutProgramme;
+            Serial.print("L'utilisateur a attendu ");
+            Serial.print(tempsAttente);
+            Serial.println(" millisecondes avant d'appuyer sur le capteur.");
+
+            // Mettre à jour la caractéristique BLE avec le temps d'attente
+            std::string tempsAttenteStr = std::to_string(tempsAttente);
+            pCharacteristicTempsDeReaction->setValue(tempsAttenteStr);
+            pCharacteristicTempsDeReaction->notify(); // Envoyer la notification aux clients abonnés
+        }
+
+        // Mettre à jour l'état précédent du capteur
+        lastSensorState = currentSensorState;
+    }
 }

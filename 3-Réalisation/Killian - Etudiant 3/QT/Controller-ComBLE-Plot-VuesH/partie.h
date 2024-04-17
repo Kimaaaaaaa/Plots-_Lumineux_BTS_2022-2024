@@ -4,12 +4,11 @@
 #include <QObject>
 #include <plot.h>
 
-
 class Partie : public QObject
 {
     Q_OBJECT
 public:
-    explicit Partie(int tempsPourAppuyer = 5, int nbCoup = 10, QString couleurJ1 = "red", QString couleurJ2 =nullptr, QObject *parent = nullptr);
+    explicit Partie(int tempsPourAppuyer = 5, int nbCoup = 10, QString couleurJ1 = "red", QString couleurJ2 = nullptr, QObject *parent = nullptr);
 
     int getTourCourant() const;
     void setTourCourant(int newTourCourant);
@@ -35,23 +34,26 @@ public:
     int getRandomIndex() const;
     void setRandomIndex(int newRandomIndex);
 
+    void addListeDeTempsDeReactionJ1(unsigned int newTempsDeReaction);
+
 private:
-    QString couleurJ1; //par défaut 1
+    QString couleurJ1; // par défaut "red"
     QString couleurJ2;
-    int  tempsPourAppuyer; //en secondes
+    int tempsPourAppuyer; // en secondes
     int nbCoup;
-    QList<Plot*> listePlotPartie;
+    QList<Plot *> listePlotPartie;
     int tourCourant;
     bool isLaunched;
     bool isColorRandom;
     int plotTouche;
     int randomIndex;
-
-    QList<unsigned long> listeTempsDeReactionJ1;
-    QList<unsigned long> listeTempsDeReactionJ2;
+    QList<unsigned int> listeDeTempsDeReactionJ1; // Utilisation de unsigned int au lieu de unsigned int*
+    QList<unsigned int> listeDeTempsDeReactionJ2; // Utilisation de unsigned int au lieu de unsigned int*
 
 signals:
     void isLaunchedChanged(bool);
+
+public slots:
 
 };
 

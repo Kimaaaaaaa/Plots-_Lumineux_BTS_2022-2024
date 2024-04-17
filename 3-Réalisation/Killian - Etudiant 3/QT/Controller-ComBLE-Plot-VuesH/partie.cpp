@@ -12,6 +12,8 @@ Partie::Partie(int tempsPourAppuyer, int nbCoup, QString couleurJ1, QString coul
     this->isLaunched = false;
 
 
+
+
 }
 
 int Partie::getTourCourant() const
@@ -98,3 +100,9 @@ void Partie::setRandomIndex(int newRandomIndex)
 {
     randomIndex = newRandomIndex;
 }
+
+void Partie::addListeDeTempsDeReactionJ1(unsigned int newTempsDeReaction) {
+    listeDeTempsDeReactionJ1.append(newTempsDeReaction);
+}
+
+
