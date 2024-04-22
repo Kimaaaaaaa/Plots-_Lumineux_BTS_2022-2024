@@ -15,7 +15,7 @@ int txValue = 0;
 #define UUID_CHARACTERISTIC_COULEUR "8cd233ac-a2ca-450e-a7a2-d114bd53e2a3"
 #define UUID_CHARACTERISTIC_TEMPSDEREACTION "8cd233ac-a2ca-450e-a7a2-ea07361b26aa"
 
-#define PIN_LED       12
+#define PIN_LED 12
 #define BROCHE_CAPTEUR 13
 #define DUREE_ATTENTE 10000
 #define NUMPIXELS 12
@@ -35,104 +35,103 @@ int couleur = -1;
 
 
 class MyServerCallbacks : public BLEServerCallbacks {
-    void onConnect(BLEServer* pServer) {
-      deviceConnected = true;
-      pCharacteristicColor->setValue("Eteint");
-      pCharacteristicBattery->setValue("50");
-      pCharacteristicTempsDeReaction->setValue("1254 ms");
-      Heltec.display->clear();
-      Heltec.display->drawString(0, 0, "Connecte");
-      Heltec.display->drawString(0, 10, "Battery :" + String(pCharacteristicBattery->getValue().c_str()));
-      Heltec.display->drawString(0, 20, "Couleur :" + String(pCharacteristicColor->getValue().c_str()));
-      Heltec.display->drawString(0, 30, "TempsDeReaction :" + String(pCharacteristicTempsDeReaction->getValue().c_str()));
-      Heltec.display->display();
-    }
+  void onConnect(BLEServer *pServer) {
+    deviceConnected = true;
+    pCharacteristicColor->setValue("off");
+    pCharacteristicBattery->setValue("50");
+    pCharacteristicTempsDeReaction->setValue("1254 ms");
+    Heltec.display->clear();
+    Heltec.display->drawString(0, 0, "Connected");
+    Heltec.display->drawString(0, 10, "Battery :" + String(pCharacteristicBattery->getValue().c_str()));
+    Heltec.display->drawString(0, 20, "Color :" + String(pCharacteristicColor->getValue().c_str()));
+    Heltec.display->drawString(0, 30, "Reaction time :" + String(pCharacteristicTempsDeReaction->getValue().c_str()));
+    Heltec.display->display();
+  }
 };
 class MyCharacteristicColorCallbacks : public BLECharacteristicCallbacks {
 public:
-    void onWrite(BLECharacteristic *pCharacteristic) override {
-        std::string receivedData = pCharacteristic->getValue();
-        const char *data = receivedData.c_str();
+  void onWrite(BLECharacteristic *pCharacteristic) override {
+    String receivedData = pCharacteristic->getValue();
+    const char *data = receivedData.c_str();
 
-        Heltec.display->clear();
-        Heltec.display->drawString(0, 20, "Couleur : " + String(receivedData.c_str()));
-        Heltec.display->display();
+    Heltec.display->clear();
+    Heltec.display->drawString(0, 20, "Color : " + String(receivedData.c_str()));
+    Heltec.display->display();
 
-        
 
-        if (strcmp(data, "white") == 0) {
-            couleur = 0;
-        } else if (strcmp(data, "red") == 0) {
-            couleur = 1;
-        } else if (strcmp(data, "green") == 0) {
-            couleur = 2;
-        } else if (strcmp(data, "blue") == 0) {
-            couleur = 3;
-        } else if (strcmp(data, "yellow") == 0) {
-            couleur = 4;
-        } else {
-            couleur = 5;
-        }
 
-        if (couleur != -1) {
-            pixels.begin();
-            pixels.clear();
-            pixels.setBrightness(50);
+    if (strcmp(data, "white") == 0) {
+      couleur = 0;
+    } else if (strcmp(data, "red") == 0) {
+      couleur = 1;
+    } else if (strcmp(data, "green") == 0) {
+      couleur = 2;
+    } else if (strcmp(data, "blue") == 0) {
+      couleur = 3;
+    } else if (strcmp(data, "yellow") == 0) {
+      couleur = 4;
+    } else {
+      couleur = 5;
+    }
 
-            switch (couleur) {
-                case 0:
-                    pixels.fill(pixels.Color(255, 255, 255)); // White
-                    break;
-                case 1:
-                    pixels.fill(pixels.Color(255, 0, 0)); // Red
-                    break;
-                case 2:
-                    pixels.fill(pixels.Color(0, 255, 0)); // Green
-                    break;
-                case 3:
-                    pixels.fill(pixels.Color(0, 0, 255)); // Blue
-                    break;
-                case 4:
-                    pixels.fill(pixels.Color(255, 255, 0)); // Yellow
-                    break;
-                default:
-                    pixels.clear();
-                    break;
-            }
+    if (couleur != -1) {
+      pixels.begin();
+      pixels.clear();
+      pixels.setBrightness(50);
 
-            pixels.show();
+      switch (couleur) {
+        case 0:
+          pixels.fill(pixels.Color(255, 255, 255));  // White
+          break;
+        case 1:
+          pixels.fill(pixels.Color(255, 0, 0));  // Red
+          break;
+        case 2:
+          pixels.fill(pixels.Color(0, 255, 0));  // Green
+          break;
+        case 3:
+          pixels.fill(pixels.Color(0, 0, 255));  // Blue
+          break;
+        case 4:
+          pixels.fill(pixels.Color(255, 255, 0));  // Yellow
+          break;
+        default:
+          pixels.clear();
+          break;
+      }
 
-            couleur = 10;
-         
-           }
-        }
+      pixels.show();
+
+      couleur = 10;
+    }
+  }
 };
 
 
 
 // capter lorsque la characteristique battery est modifié
 class MyCharacteristicBatteryCallbacks : public BLECharacteristicCallbacks {
-    void onWrite(BLECharacteristic *pCharacteristic) {
-      String receivedData = String(pCharacteristic->getValue().c_str());
+  void onWrite(BLECharacteristic *pCharacteristic) {
+    String receivedData = String(pCharacteristic->getValue().c_str());
 
-      // Display received data on the screen
-      Heltec.display->clear();
-      Heltec.display->drawString(0, 30, "Batterie : " + receivedData);
-      Heltec.display->display();
-    }
+    // Display received data on the screen
+    Heltec.display->clear();
+    Heltec.display->drawString(0, 30, "Battery : " + receivedData);
+    Heltec.display->display();
+  }
 };
 
 // // capter lorsque la characteristique temps de réaction est modifié
 
 class MyCharacteristicTempsDeReactionCallbacks : public BLECharacteristicCallbacks {
-    void onWrite(BLECharacteristic *pCharacteristic) {
-      String receivedData = String(pCharacteristic->getValue().c_str());
+  void onWrite(BLECharacteristic *pCharacteristic) {
+    String receivedData = String(pCharacteristic->getValue().c_str());
 
-      // Display received data on the screen
-      Heltec.display->clear();
-      Heltec.display->drawString(0, 40, "Temps de reaction : " + receivedData);
-      Heltec.display->display();
-    }
+    // Display received data on the screen
+    Heltec.display->clear();
+    Heltec.display->drawString(0, 40, "Reaction Time : " + receivedData);
+    Heltec.display->display();
+  }
 };
 
 void setup() {
@@ -142,6 +141,7 @@ void setup() {
   // Configuration de l'écran
   Heltec.begin(true /*DisplayEnable Enable*/, false /*LoRa Disable*/, true /*Serial Enable*/);
   Heltec.display->setFont(ArialMT_Plain_10);
+
 
   // Create the BLE Device
   BLEDevice::init("PlotKillian");
@@ -155,9 +155,8 @@ void setup() {
 
   // Create a BLE Characteristic for battery
   pCharacteristicBattery = pServiceBattery->createCharacteristic(
-                             SERVICE_BATTERY_UUID,
-                             BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
-                           );
+    SERVICE_BATTERY_UUID,
+    BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE);
 
   // Add descriptor for Battery Level
   pCharacteristicBattery->addDescriptor(new BLE2902());
@@ -170,17 +169,15 @@ void setup() {
 
   // Create the BLE Plot Color Characteristic
   pCharacteristicColor = pServicePlot->createCharacteristic(
-                           UUID_CHARACTERISTIC_COULEUR,
-                           BLECharacteristic::PROPERTY_WRITE
-                         );
+    UUID_CHARACTERISTIC_COULEUR,
+    BLECharacteristic::PROPERTY_WRITE);
 
 
 
   // Caractéristique Temps de Réaction
   pCharacteristicTempsDeReaction = pServicePlot->createCharacteristic(
-                                     UUID_CHARACTERISTIC_TEMPSDEREACTION,
-                                     BLECharacteristic::PROPERTY_READ
-                                   );
+    UUID_CHARACTERISTIC_TEMPSDEREACTION,
+    BLECharacteristic::PROPERTY_READ);
 
 
   // Set data received callback for the color characteristic
@@ -196,36 +193,36 @@ void setup() {
 }
 
 void loop() {
-    static int lastSensorState = HIGH;  // État précédent du capteur
+  static int lastSensorState = HIGH;  // État précédent du capteur
 
-    if (couleur != -1 && (couleur >= 1 && couleur <= 5)) {
-        // Si la couleur est valide et correspond à une action attendue
+  if (couleur != -1 && (couleur >= 1 && couleur <= 5)) {
+    // Si la couleur est valide et correspond à une action attendue
 
-        int currentSensorState = digitalRead(BROCHE_CAPTEUR);
+    int currentSensorState = digitalRead(BROCHE_CAPTEUR);
 
-        // Détecter le changement d'état du capteur (de HIGH à LOW)
-        if (currentSensorState == HIGH && lastSensorState == HIGH) {
-            unsigned long tempsDebutProgramme = millis();
-            Serial.println("Début de la capture du temps");
+    // Détecter le changement d'état du capteur (de HIGH à LOW)
+    if (currentSensorState == HIGH && lastSensorState == HIGH) {
+      unsigned long tempsDebutProgramme = millis();
+      Serial.println("Début de la capture du temps");
 
-            // Attendre que le capteur repasse à l'état HIGH (relâchement de l'appui)
-            while (digitalRead(BROCHE_CAPTEUR) == LOW) {
-                delay(10);  // Attente courte pour éviter une boucle trop rapide
-            }
+      // Attendre que le capteur repasse à l'état HIGH (relâchement de l'appui)
+      while (digitalRead(BROCHE_CAPTEUR) == LOW) {
+        delay(10);  // Attente courte pour éviter une boucle trop rapide
+      }
 
-            // Calculer le temps d'attente
-            unsigned long tempsAttente = millis() - tempsDebutProgramme;
-            Serial.print("L'utilisateur a attendu ");
-            Serial.print(tempsAttente);
-            Serial.println(" millisecondes avant d'appuyer sur le capteur.");
+      // Calculer le temps d'attente
+      unsigned long tempsAttente = millis() - tempsDebutProgramme;
+      Serial.print("L'utilisateur a attendu ");
+      Serial.print(tempsAttente);
+      Serial.println(" millisecondes avant d'appuyer sur le capteur.");
 
-            // Mettre à jour la caractéristique BLE avec le temps d'attente
-            std::string tempsAttenteStr = std::to_string(tempsAttente);
-            pCharacteristicTempsDeReaction->setValue(tempsAttenteStr);
-            pCharacteristicTempsDeReaction->notify(); // Envoyer la notification aux clients abonnés
-        }
-
-        // Mettre à jour l'état précédent du capteur
-        lastSensorState = currentSensorState;
+      // Mettre à jour la caractéristique BLE avec le temps d'attente
+      String tempsAttenteStr = String(tempsAttente);
+      pCharacteristicTempsDeReaction->setValue(tempsAttenteStr);
+      pCharacteristicTempsDeReaction->notify();  // Envoyer la notification aux clients abonnés
     }
+
+    // Mettre à jour l'état précédent du capteur
+    lastSensorState = currentSensorState;
+  }
 }
