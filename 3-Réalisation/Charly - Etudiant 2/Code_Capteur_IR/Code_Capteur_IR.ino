@@ -7,9 +7,9 @@
 
 BLECharacteristic *pCharacteristicBattery;
 BLECharacteristic *pCharacteristicColor;
-BLECharacteristic* pCharacteristicTempsPourAppuyer;
-BLECharacteristic* pCharacteristicID;
-BLECharacteristic* pCharacteristicTempsDeReaction;
+BLECharacteristic *pCharacteristicTempsPourAppuyer;
+BLECharacteristic *pCharacteristicID;
+BLECharacteristic *pCharacteristicTempsDeReaction;
 bool deviceConnected = false;
 int txValue = 0;
 
@@ -23,11 +23,8 @@ bool idReceived = false;
 #define UUID_CHARACTERISTIC_ID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
 #define UUID_CHARACTERISTIC_TEMPSDEREACTION "beb5483e-36e1-4688-b7f5-ea07361b26aa"
 
-
 #define BROCHE_CAPTEUR 13
 #define DUREE_ATTENTE 10000
-
-
 
 class MyServerCallbacks : public BLEServerCallbacks {
     void onConnect(BLEServer* pServer) {
@@ -70,14 +67,17 @@ class MyCharacteristicBatteryCallbacks : public BLECharacteristicCallbacks {
 };
 class MyCharacteristicTempsDeReactionCallbacks : public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *pCharacteristic) {
+
       String receivedData = String(pCharacteristic->getValue().c_str());
 
-      // Display received data on the screen
+
+      // Afficher les données reçues sur l'écran
       Heltec.display->clear();
       Heltec.display->drawString(0, 40, "Temps de reaction : " + receivedData);
       Heltec.display->display();
     }
 };
+
 
 void setup() {
   Serial.begin(115200);
@@ -124,7 +124,7 @@ void setup() {
   // Caractéristique Temps de Réaction
   pCharacteristicTempsDeReaction = pServicePlot->createCharacteristic(
                                      UUID_CHARACTERISTIC_TEMPSDEREACTION,
-                                     BLECharacteristic::PROPERTY_READ
+                                     BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
                                    );
 
   pCharacteristicTempsPourAppuyer = pServicePlot->createCharacteristic(
@@ -145,7 +145,7 @@ void setup() {
   Serial.println("Waiting for a client connection to notify...");
 }
 
-void loop() { 
+void loop() {
   static String idValue = ""; // Variable statique pour stocker l'ID en cours de lecture
 
   while (Serial.available()) {
@@ -169,30 +169,30 @@ void loop() {
 
     int valeurCapteur = digitalRead(BROCHE_CAPTEUR);
     unsigned long tempsActuel = millis();
-    
-  if (valeurCapteur == LOW) {
-    unsigned long tempsDetection = tempsActuel - tempsDebutProgramme;
-    Serial.print("Détection infrarouge détectée après ");
-    Serial.print(tempsDetection);
-    Serial.println(" millisecondes.");
-    pCharacteristicTempsDeReaction->setValue((uint8_t*)&tempsDetection, sizeof(tempsDetection));
-    pCharacteristicTempsDeReaction->notify();
-    tempsDebutProgramme = millis();
-    idReceived = false; // Remettre idReceived à false pour attendre un nouvel ID
-    
-  } else {
-    if (tempsActuel - tempsDebutProgramme > DUREE_ATTENTE) {
+
+    if (valeurCapteur == LOW) {
       unsigned long tempsDetection = tempsActuel - tempsDebutProgramme;
-      Serial.println("Délai de 10 secondes écoulé, envoi du temps...");
-      Serial.print("Temps écoulé : ");
+      Serial.print("Détection infrarouge détectée après ");
       Serial.print(tempsDetection);
       Serial.println(" millisecondes.");
-      // Mettre le temps de réaction dans la caractéristique
       pCharacteristicTempsDeReaction->setValue((uint8_t*)&tempsDetection, sizeof(tempsDetection));
       pCharacteristicTempsDeReaction->notify();
       tempsDebutProgramme = millis();
       idReceived = false; // Remettre idReceived à false pour attendre un nouvel ID
+
+    } else {
+      if (tempsActuel - tempsDebutProgramme > DUREE_ATTENTE) {
+        unsigned long tempsDetection = tempsActuel - tempsDebutProgramme;
+        Serial.println("Délai de 10 secondes écoulé, envoi du temps...");
+        Serial.print("Temps écoulé : ");
+        Serial.print(tempsDetection);
+        Serial.println(" millisecondes.");
+        // Mettre le temps de réaction dans la caractéristique
+        pCharacteristicTempsDeReaction->setValue((uint8_t*)&tempsDetection, sizeof(tempsDetection));
+        pCharacteristicTempsDeReaction->notify();
+        tempsDebutProgramme = millis();
+        idReceived = false; // Remettre idReceived à false pour attendre un nouvel ID
+      }
     }
-  }
   }
 }
