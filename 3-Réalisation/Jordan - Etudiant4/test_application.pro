@@ -1,4 +1,5 @@
 QT += quick
+QT += qml quick
 QT += charts qml quick
 QT += charts
 QT += core
