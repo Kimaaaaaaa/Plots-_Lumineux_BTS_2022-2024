@@ -38,7 +38,7 @@ class MyServerCallbacks : public BLEServerCallbacks {
   void onConnect(BLEServer *pServer) {
     deviceConnected = true;
     pCharacteristicColor->setValue("off");
-    pCharacteristicBattery->setValue("50");
+    pCharacteristicBattery->setValue("100");
     pCharacteristicTempsDeReaction->setValue("1254 ms");
     Heltec.display->clear();
     Heltec.display->drawString(0, 0, "Connected");
