@@ -16,6 +16,7 @@ ComBLE::ComBLE(QObject *parent) : QObject(parent)
 
 
 
+
 }
 
 bool ComBLE::isScanning() const
@@ -52,36 +53,7 @@ void ComBLE::deviceDetecte(const QBluetoothDeviceInfo &info)
     }
 }
 
-/*void ComBLE::scanServices(QLowEnergyController *controllerBle){
 
-    //scan des services
-    connect(controllerBle, &QLowEnergyController::serviceDiscovered, [=](const QBluetoothUuid &uuid)
-    {
-        // Récupérer le service
-        QLowEnergyService *service = controllerBle->createServiceObject(uuid);
-
-        //Si un service a été déouvert
-        if (service) {
-            // Connecter le signal de service découvert à une fonction slot
-            qDebug() << "test";
-            connect(service, &QLowEnergyService::stateChanged, this, &ComBLE::serviceStateChanged);
-            // Démarrer la découverte du service
-            service->discoverDetails();
-            listeDeService.push_back(service);
-
-            //detecter les caracteristiques
-            //characteristic  -> QlowEnergyCharacteristic
-            const QLowEnergyCharacteristic characteristic = service->characteristic(uuid);
-
-
-            connect(this, &ComBLE::serviceDetecte, this, [=](QLowEnergyService *service) {
-                lireValeurCharacteristicBattery(service);
-            });
-
-        }
-    });
-
-}*/
 
 void ComBLE::scanServices(QLowEnergyController *controllerBle){
 
@@ -89,51 +61,52 @@ void ComBLE::scanServices(QLowEnergyController *controllerBle){
 
     //scan des services
     connect(controllerBle, &QLowEnergyController::serviceDiscovered, [=](const QBluetoothUuid &uuid)
-    {
-        // Récupérer le service
-        QLowEnergyService *service = controllerBle->createServiceObject(uuid);
-        // qDebug() << "test";
+            {
+                // Récupérer le service
+                QLowEnergyService *service = controllerBle->createServiceObject(uuid);
+                // qDebug() << "test";
 
 
-        //Si un service a été déouvert
-        if (service) {
+                //Si un service a été déouvert
+                if (service) {
 
-            // Connecter le signal de service découvert à une fonction slot
-            connect(service, &QLowEnergyService::stateChanged, this, &ComBLE::serviceStateChanged);
-            // Démarrer la découverte du service
-            service->discoverDetails();
-            listeDeService.push_back(service);
-            //detecter les caracteristiques
-            //characteristic  -> QlowEnergyCharacteristic
-            const QLowEnergyCharacteristic characteristic = service->characteristic(uuid);
+                    // Connecter le signal de service découvert à une fonction slot
+                    connect(service, &QLowEnergyService::stateChanged, this, &ComBLE::serviceStateChanged);
+                    // Démarrer la découverte du service
+                    service->discoverDetails();
+                    listeDeService.push_back(service);
+                    //detecter les caracteristiques
+                    //characteristic  -> QlowEnergyCharacteristic
+                    const QLowEnergyCharacteristic characteristic = service->characteristic(uuid);
 
 
-            emit serviceDetecte(service);
-          // qDebug()<< characteristicBattery.value();
+                    emit serviceDetecte(service);
+                    // qDebug()<< characteristicBattery.value();
 
-        }
-    });
+                }
+            });
 
 
     connect(controllerBle, &QLowEnergyController::discoveryFinished, [=]()
-    {
-        QList<QBluetoothUuid> listeUUIDService = controllerBle->services();
+            {
+                QList<QBluetoothUuid> listeUUIDService = controllerBle->services();
 
-        foreach (QBluetoothUuid uuidService, listeUUIDService) {
-            QLowEnergyService* service = controllerBle->createServiceObject(uuidService, controllerBle);
-            service->discoverDetails();
+                foreach (QBluetoothUuid uuidService, listeUUIDService) {
+                    QLowEnergyService* service = controllerBle->createServiceObject(uuidService, controllerBle);
+                    service->discoverDetails();
 
-            connect(service, &QLowEnergyService::stateChanged, this, &ComBLE::serviceStateChanged);
+                    connect(service, &QLowEnergyService::stateChanged, this, &ComBLE::serviceStateChanged);
 
-            // Lire la valeur des characteristiques découvert
-            const QLowEnergyCharacteristic characteristic = service->characteristic(uuidService);
-            if (characteristic.isValid()) {
-                qDebug() << "Valeur actuelle de la caractéristique : " << characteristic.value();
 
-                emit batterieLue(service, characteristic.value());
-            }
-        }
-    });
+                    // Lire la valeur des characteristiques découvert
+                    const QLowEnergyCharacteristic characteristic = service->characteristic(uuidService);
+                    if (characteristic.isValid()) {
+                        qDebug() << "Valeur actuelle de la caractéristique : " << characteristic.value();
+
+                        emit batterieLue(service, characteristic.value());
+                    }
+                }
+            });
 
 
     controllerBle->discoverServices();
@@ -146,25 +119,21 @@ void ComBLE::scanServices(QLowEnergyController *controllerBle){
 
 
 
-void ComBLE::serviceStateChanged(QLowEnergyService::ServiceState newState)
-{
-    QLowEnergyService *service = qobject_cast<QLowEnergyService*>(sender());
-    if (!service)
-        return;
 
-    switch (newState) {
-    case QLowEnergyService::DiscoveringServices:
-        qDebug() << "Discovering services...";
-        break;
-    case QLowEnergyService::ServiceDiscovered:
-        qDebug() << "Service discovered:" << service->serviceName();
-        // Traitez le service découvert ici
-        break;
-    default:
-        // Traitez les autres états si nécessaire
-        break;
-    }
+void ComBLE::onCharacteristicValueChanged(const QLowEnergyCharacteristic characteristic, QByteArray newValue)
+{
+
+    qDebug() << "Valeur de la caractéristique" << characteristic.uuid().toString() << "a changé :" << newValue;
+    // Mettez ici votre logique pour traiter la nouvelle valeur
+
+
+
+
+    emit plotAppuye(newValue);
 }
+
+
+
 
 
 
@@ -209,4 +178,46 @@ void ComBLE::writeCharacteristic(QLowEnergyController *controller, const QBlueto
         }
     }
 }
+
+void ComBLE::serviceStateChanged(QLowEnergyService::ServiceState newState)
+{
+    QLowEnergyService *service = qobject_cast<QLowEnergyService *>(sender());
+    if (!service)
+        return;
+
+    if (newState == QLowEnergyService::ServiceDiscovered) {
+        // Récupérer les caractéristiques du service découvert
+        QList<QLowEnergyCharacteristic> characteristics = service->characteristics();
+
+        foreach (const QLowEnergyCharacteristic &characteristic, characteristics) {
+            qDebug() << "Caractéristique UUID :" << characteristic.uuid().toString();
+
+            // Vérifier si la caractéristique est celle que nous voulons surveiller (temps de réaction du plot)
+            if (characteristic.uuid() == QBluetoothUuid(QStringLiteral(UUID_CHARACTERISTIC_TEMPSDEREACTION))) {
+                qDebug() << "Caractéristique Temps de Réaction trouvée";
+
+                // Récupérer le descripteur ClientCharacteristicConfiguration de la caractéristique
+                QLowEnergyDescriptor notificationDescriptor = characteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+                if (!notificationDescriptor.isValid()) {
+                    // Le descripteur n'est pas présent, échec de l'ajout automatique
+                    qDebug("Échec de la récupération du descripteur ClientCharacteristicConfiguration.");
+
+                    // Afficher les descripteurs disponibles pour la caractéristique
+                    QList<QLowEnergyDescriptor> descriptors = characteristic.descriptors();
+                    foreach (const QLowEnergyDescriptor &descriptor, descriptors) {
+                        qDebug() << "Descripteur UUID :" << descriptor.uuid().toString();
+                    }
+                } else {
+                    // Le descripteur est déjà présent, activer les notifications
+                    qDebug("Notifications activées !");
+                    service->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100")); // Activer les notifications
+                    connect(service, &QLowEnergyService::characteristicChanged, this, &ComBLE::onCharacteristicValueChanged);
+                }
+            }
+        }
+    }
+}
+
+
+
 

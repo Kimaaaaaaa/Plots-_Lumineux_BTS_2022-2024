@@ -25,9 +25,9 @@ Item {
     Connections {
         target: controller
         function onStatutScanTermine() {
-            detectButton.enabled = true
+            detectButton.enabled = false
             detectButton.text = "Détecter les plots"
-            debuterPartie.enabled = true
+
         }
     }
 
@@ -119,6 +119,15 @@ Item {
                     nbPlotSelectionnes--;
                     controller.removeSelectedPlots(id);
                 }
+
+                if(nbPlotSelectionnes >= 1)
+                {
+                    debuterPartie.enabled = true;
+                }
+                else{
+                    debuterPartie.enabled= false;
+                }
+
                 console.log(nbPlotSelectionnes)
             }
         }

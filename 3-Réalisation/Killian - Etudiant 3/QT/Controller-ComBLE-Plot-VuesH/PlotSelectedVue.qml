@@ -27,12 +27,6 @@ Item {
             topPadding: 30
         }
         Text {
-            text: "0%"
-            // Afficher le nom du périphérique
-            anchors.centerIn: parent
-            font.bold: true
-        }
-        Text {
             text: "ID du plot : " + idPlot
             anchors.horizontalCenter: parent.horizontalCenter // Utilisation de la propriété idPlot au lieu de id
             anchors {

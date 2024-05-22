@@ -10,6 +10,13 @@
 #include <partie.h>
 #include <QRandomGenerator>
 
+#define SERVICE_BATTERY_UUID "0000180f-0000-1000-8000-00805f9b34fb"
+#define CHARACTERISTIC_BATTERY_UUID "0000180f-0000-1000-8000-00805f9b34fb"
+#define SERVICE_PLOT_UUID "4fafc202-1fb5-459e-8fcc-c5c9c331914b"
+#define UUID_CHARACTERISTIC_COULEUR "8cd233ac-a2ca-450e-a7a2-d114bd53e2a3"
+#define UUID_CHARACTERISTIC_TEMPSDEREACTION "8cd233ac-a2ca-450e-a7a2-ea07361b26aa"
+#define UUID_CHARACTERISTIC_ID "8cd233ac-a2ca-450e-a7a2-xp94574c14ee"
+
 class Controller: public QObject
 {
     Q_OBJECT
@@ -34,6 +41,9 @@ public:
     Q_INVOKABLE int getIndexByIdSelectedPlot(int index);
     Q_INVOKABLE void changerCouleurPlot(QString couleur, int id);
     Q_INVOKABLE void lancerPartieJ1(int tempsPourAppuyer = 5, int nbCoup = 10, QString couleurJ1 = "red");
+     Q_INVOKABLE void lancerPartieJ2(int tempsPourAppuyer = 5, int nbCoup = 10, QString couleurJ1 = "red", QString couleurJ2 = "blue");
+    Q_INVOKABLE void affecterIDCharacteristique();
+
 
 
     //Q_INVOKABLE int lancerPartie(int temps);
@@ -42,7 +52,6 @@ public:
     ComBLE* com() const;
     QString getNomDernierPlotTrouve();
     int getLastPlotId();
-    void addPlotTest();
     void writeDataToDevice(QLowEnergyService *service, const QLowEnergyCharacteristic &characteristic, const QByteArray &data);
     const QList<Plot*> getListeSelectedPlot();
     bool getIsLaunched(bool);
@@ -67,7 +76,7 @@ public slots:
     //void startTimer();
     void nextIteration();
     void eteindreToutLesPlots();
-    void recupererTempsDeReaction(QLowEnergyService* service, QByteArray data);
+    void handleReactiontime(QByteArray reactionTime);
 
 
 
@@ -107,6 +116,9 @@ private:
     Partie* partie;
     int indexCourant;
     QMetaObject::Connection m_timerConnection;
+    int idDuDernierPlotAllume;
+    bool isMode1J = false;
+    bool isMode2J = false;
 
 
 };

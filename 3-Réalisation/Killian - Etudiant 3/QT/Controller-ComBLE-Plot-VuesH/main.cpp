@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("controller", &controller);
     qmlRegisterType<Plot>("entitePlot", 1, 0, "Plot");
 
-    controller.addPlotTest();
+
 
 
 

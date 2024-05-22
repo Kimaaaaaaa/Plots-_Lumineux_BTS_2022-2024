@@ -43,7 +43,9 @@ Item {
             anchors.fill: parent
             onClicked: {
                 if(isSelect)
+                {
                     selectedPlot = !selectedPlot;
+                }
             }
         }
     }

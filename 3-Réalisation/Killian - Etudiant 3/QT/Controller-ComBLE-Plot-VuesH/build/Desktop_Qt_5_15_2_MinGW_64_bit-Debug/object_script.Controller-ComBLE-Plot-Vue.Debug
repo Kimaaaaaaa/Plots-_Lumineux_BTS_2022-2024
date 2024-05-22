@@ -1,0 +1,10 @@
+debug/comble.o
+debug/controller.o
+debug/main.o
+debug/partie.o
+debug/plot.o
+debug/qrc_qml.o
+debug/moc_comble.o
+debug/moc_controller.o
+debug/moc_partie.o
+debug/moc_plot.o

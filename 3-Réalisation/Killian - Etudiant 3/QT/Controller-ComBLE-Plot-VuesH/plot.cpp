@@ -3,10 +3,7 @@
 
 #include "plot.h"
 
-#define SERVICE_BATTERY_UUID "0000180f-0000-1000-8000-00805f9b34fb"
-#define CHARACTERISTIC_BATTERY_UUID_TX  "0000180f-0000-1000-8000-00805f9b34fb"
-#define SERVICE_PLOT_UUID "4fafc202-1fb5-459e-8fcc-c5c9c331914b"
-#define UUID_Characteristic_Couleur "8cd233ac-a2ca-450e-a7a2-d114bd53e2a3"
+
 
 /*Constructeur*/
 
@@ -22,6 +19,8 @@ Plot::Plot()
 
     m_id = s_nextId++;
     qDebug() << "ID DU PLOT COURANT : "<<m_id;
+
+
 
 
 
@@ -130,6 +129,11 @@ void Plot::writeTimeout()
     qWarning() << "Write operation timed out.";
 }
 
+void Plot::handleCharacteristicChange()
+{
+    qDebug() << "Le temps de reaction du plot : " << this->getId() << "a changé";
+}
+
 bool Plot::getAllume() const
 {
     return allume;
@@ -164,6 +168,8 @@ void Plot::deconnecterPlot()
 
 void Plot::ecrireCouleurCharacteristic(const QString &couleur)
 {
+
+
 
     if (!controllerBle) {
         qWarning() << "Controller BLE is not initialized.";
@@ -204,7 +210,7 @@ void Plot::ecrireCouleurCharacteristic(const QString &couleur)
 
     }
 
-    QBluetoothUuid characteristicCouleurUuid(QStringLiteral(UUID_Characteristic_Couleur));
+    QBluetoothUuid characteristicCouleurUuid(QStringLiteral(UUID_CHARACTERISTIC_COULEUR));
     QLowEnergyCharacteristic characteristicCouleur = servicePlot->characteristic(characteristicCouleurUuid);
     if (!characteristicCouleur.isValid()) {
         qWarning() << "Characteristic Couleur introuvable";
@@ -218,7 +224,4 @@ void Plot::ecrireCouleurCharacteristic(const QString &couleur)
     servicePlot->writeCharacteristic(characteristicCouleur, dataByteArray, QLowEnergyService::WriteWithoutResponse);
 
 }
-
-
-
 

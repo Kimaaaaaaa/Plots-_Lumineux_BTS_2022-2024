@@ -71,20 +71,7 @@ Item {
             color: "#D3D3D3"
             indexListe: index
 
-            MouseArea {
-                    anchors.fill: parent // Capturer les clics sur toute la zone de l'élément PlotSelectedVue
 
-                    onClicked: {
-
-                        console.log("Plot sélectionné:", nomPlot);
-                        // Exemple de modification de la couleur lors du clic
-                        color = "#D3D3D3"; // Changer la couleur du plot au rouge lors du clic
-                        controller.plotTouche(idPlot);
-                        controller.eteindreToutLesPlots();
-
-                    }
-                }
-        }
     }
 
 
@@ -119,7 +106,8 @@ Item {
 
 
 
-                  controller.lancerPartieJ1(5, 2000, "random");
+                  controller.lancerPartieJ2(5, 2000, "red", "blue");
+                  controller.affecterIDCharacteristique();
               }
         Connections {
                     target: controller
@@ -140,3 +128,4 @@ Designer {
     D{i:0;autoSize:true;height:480;width:640}
 }
 ##^##*/
+}

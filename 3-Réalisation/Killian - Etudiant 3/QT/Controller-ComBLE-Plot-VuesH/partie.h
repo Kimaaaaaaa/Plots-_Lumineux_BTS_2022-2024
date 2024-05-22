@@ -4,6 +4,7 @@
 #include <QObject>
 #include <plot.h>
 
+
 class Partie : public QObject
 {
     Q_OBJECT
