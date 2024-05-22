@@ -4,41 +4,28 @@ require_once('dataJoueurs.php');
 
 $plots_lumineux = new plots_lumineux();
 
-$id = 1;
+$joueur = array('password'=>'1234','email'=>'exemple@mail','identifiant'=>'test');
 
-
-$joueur = array('password'=>'123','email'=>'nouveau@mail','identifiant'=>'nouveauJ');
-
-//test creer OK
+//test create
 $resultat = $plots_lumineux->createJoueur($joueur);
-//var_dump($resultat);
-
-//test get all OK
-var_dump($plots_lumineux->getJoueurs());
-
-//test get OK
-$id=144;
-$joueur = $plots_lumineux->getjoueur($id);
-var_dump($joueur);
-
-
-//test modifier OK
-/*$joueurUpdate = array(
-    'id' => 101, 
-    'password' => 'testmdp',
-    'email' => 'update@mail.com',
-    'identifiant' => 'updateJoueur'
-);*/
-
-//$resultat = $plots_lumineux->updateJoueur($joueurUpdate);
 var_dump($resultat);
 
-//test supprimer OK
-//$id=150;
-//$joueur = $plots_lumineux->deleteJoueur($id);
+//test get all
+var_dump($plots_lumineux->getJoueurs());
+
+//test get 
+$joueur = $plots_lumineux->getJoueur($resultat['data']['id'])['data'];
 var_dump($joueur);
 
-?>
+//test update
+$joueur['numCarte'] = '12345';
+$resultat = $plots_lumineux->updateJoueur($joueur);
+var_dump($resultat);
+
+//test delete
+var_dump($plots_lumineux->deleteJoueur($resultat['data']['id']));
+var_dump($plots_lumineux->getJoueurs());
+
 
 
 
